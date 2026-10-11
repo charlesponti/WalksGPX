@@ -29,7 +29,7 @@ final class WalkStore {
     private var isReady = false
     private var readinessContinuations: [CheckedContinuation<Void, Never>] = []
 
-    private init() {
+    init(inMemory: Bool = false, storeURL: URL? = nil) {
         let model = NSManagedObjectModel()
         let entity = NSEntityDescription()
         entity.name = "PersistedWalk"
@@ -58,6 +58,25 @@ final class WalkStore {
         // no eligible iCloud account/container connection.
         container = NSPersistentContainer(name: "WalksGPX", managedObjectModel: model)
         let description = NSPersistentStoreDescription()
+        if inMemory {
+            description.type = NSInMemoryStoreType
+        } else {
+            let applicationSupportURL = FileManager.default.urls(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask
+            )[0]
+            let resolvedURL = storeURL ?? applicationSupportURL.appendingPathComponent("WalksGPX.sqlite")
+            try? FileManager.default.createDirectory(
+                at: resolvedURL.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            // NSPersistentStoreDescription() has no durable URL by default. Without
+            // this explicit SQLite location, routes survive only for the process
+            // lifetime while the HealthKit checkpoint survives in UserDefaults.
+            description.url = resolvedURL
+        }
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
         description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         container.persistentStoreDescriptions = [description]
         container.viewContext.automaticallyMergesChangesFromParent = true

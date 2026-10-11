@@ -7,19 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		006FB6DF7EDC64657807ACC6 /* HealthKitAuthorizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D309041E61AE5B1E9C21CAF /* HealthKitAuthorizationTests.swift */; };
 		223CEF53BC7CF8578146C537 /* walking.json in Resources */ = {isa = PBXBuildFile; fileRef = FCA32A3D61FB12007353380A /* walking.json */; };
+		231EF6B479928856BC7B6821 /* ICloudExportManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8DD558EE8B17C665CD9D9A /* ICloudExportManifest.swift */; };
+		28180F4C14C315D5CD9D633B /* HealthKitRouteProcessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F772C3F35459C7A9E5FBB53 /* HealthKitRouteProcessingTests.swift */; };
+		32644EA8EF6925FBDC91C577 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1DC863405D4452E37FC9AC3F /* Assets.xcassets */; };
+		33538E947F8D68B67516FEF9 /* ContentViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A6138F07358A3B906E6FD5 /* ContentViewTests.swift */; };
+		43FB1375862C5376A21525EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 963478AF5EE3AF4BFFB510D5 /* Assets.xcassets */; };
 		47AB8BD458F498DADF458CFB /* GPXExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A266C527CBC9E19DC9D108 /* GPXExporter.swift */; };
 		4CE780D81B87E596056A69E0 /* WalkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E70BA13A526EC14C33EB14C /* WalkStore.swift */; };
 		577359428F7499323631C38C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694C95154CCDEB86E00D718A /* ContentView.swift */; };
 		57FE262F77886FB4538BD7D6 /* SyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4697840ADA7CF0F61CEC919C /* SyncState.swift */; };
+		5A7835DDDF6828AF39658E5B /* RouteMapGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EAD346DF0AE0D64914701A /* RouteMapGeometryTests.swift */; };
 		5FE32A8B80C044582C411D00 /* WalkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E70BA13A526EC14C33EB14C /* WalkStore.swift */; };
+		6525A10B1B85BBABB64FD60F /* GPXExporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46A96C0C747D340D9B57448 /* GPXExporterTests.swift */; };
+		6A957C814ED7288430D5D8BC /* ICloudGPXPublisherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7C67F9A4B31CD29A7A0C3D /* ICloudGPXPublisherTests.swift */; };
 		703A613580FB6A517554E478 /* GPXExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A266C527CBC9E19DC9D108 /* GPXExporter.swift */; };
+		7282FA32BFBA5EC7CB42B768 /* WalkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97ED6206110C5ABB9C046160 /* WalkStoreTests.swift */; };
+		749376734DD2FBB978E9642F /* ICloudExportProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2724F81D7C4B3C429811CBE9 /* ICloudExportProgressTests.swift */; };
 		A2AF38C10B812A78EB07B748 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A6D5144FBB2B22B2D6466AE /* HealthKitService.swift */; };
 		A48E8F22EC0F6ADA827CDF65 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8ECAB7187BB363A46FC8FE19 /* Lottie */; };
 		A6718C26BAE3BFFD968FED84 /* WalkRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3921DDD98B9F5F76F4330791 /* WalkRoute.swift */; };
 		ABFFA058A89ADADC5F12C2A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F087C7DEBF01ECB2BA6FAC09 /* ContentView.swift */; };
+		AF538267EDEDD914E52F093F /* ICloudExportConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56354F2B27EFBB47CC677BB3 /* ICloudExportConfiguration.swift */; };
+		C3113ABC032D29ABF0CA627E /* SyncMessagingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CE42686E7990406B3DB444 /* SyncMessagingTests.swift */; };
+		C51E4CC9DC064DBE2518D644 /* SyncMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8BFE6D2B9E7E940F62254B /* SyncMessaging.swift */; };
+		D07FEC16C6B372D775277DDF /* RouteMapGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */; };
+		D9D4B020FC782994966FED7D /* ICloudGPXPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A81134D84C85866E4833BE /* ICloudGPXPublisher.swift */; };
 		EFC3C944CC9E8AE9B21F5744 /* WalkRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3921DDD98B9F5F76F4330791 /* WalkRoute.swift */; };
 		F13E7EE3A82EF00A3D3D6E10 /* SyncStateStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EBC4C3CFA4ECE8BE6511ADD /* SyncStateStoreTests.swift */; };
+		F667C9173DE2D9715922F354 /* ICloudExportConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56354F2B27EFBB47CC677BB3 /* ICloudExportConfiguration.swift */; };
+		FBF332DD6831D4B352F1D809 /* ICloudExportManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8DD558EE8B17C665CD9D9A /* ICloudExportManifest.swift */; };
+		FC0B5C6965A4716723981DDB /* ICloudExportManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2498F4BE2BBD58DE57831632 /* ICloudExportManifestTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,21 +52,38 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		13CE42686E7990406B3DB444 /* SyncMessagingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMessagingTests.swift; sourceTree = "<group>"; };
+		1DC863405D4452E37FC9AC3F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22D162B88D7009256A5463B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2498F4BE2BBD58DE57831632 /* ICloudExportManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudExportManifestTests.swift; sourceTree = "<group>"; };
+		2724F81D7C4B3C429811CBE9 /* ICloudExportProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudExportProgressTests.swift; sourceTree = "<group>"; };
 		3921DDD98B9F5F76F4330791 /* WalkRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkRoute.swift; sourceTree = "<group>"; };
 		450DE87B06A40571B63911CA /* WalksGPX iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "WalksGPX iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4697840ADA7CF0F61CEC919C /* SyncState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncState.swift; sourceTree = "<group>"; };
+		49A6138F07358A3B906E6FD5 /* ContentViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewTests.swift; sourceTree = "<group>"; };
+		56354F2B27EFBB47CC677BB3 /* ICloudExportConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudExportConfiguration.swift; sourceTree = "<group>"; };
+		5F772C3F35459C7A9E5FBB53 /* HealthKitRouteProcessingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitRouteProcessingTests.swift; sourceTree = "<group>"; };
 		63E85F1B34F513FDFDF13CA4 /* WalksGPXTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WalksGPXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		694C95154CCDEB86E00D718A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6A6D5144FBB2B22B2D6466AE /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		7505B7AA4E6AF35A83F24963 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		75950D45D9437B8D57E27356 /* WalksGPX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WalksGPX.entitlements; sourceTree = "<group>"; };
 		7EBC4C3CFA4ECE8BE6511ADD /* SyncStateStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStateStoreTests.swift; sourceTree = "<group>"; };
+		81A81134D84C85866E4833BE /* ICloudGPXPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudGPXPublisher.swift; sourceTree = "<group>"; };
+		8D309041E61AE5B1E9C21CAF /* HealthKitAuthorizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitAuthorizationTests.swift; sourceTree = "<group>"; };
 		8E70BA13A526EC14C33EB14C /* WalkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkStore.swift; sourceTree = "<group>"; };
+		963478AF5EE3AF4BFFB510D5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		97ED6206110C5ABB9C046160 /* WalkStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkStoreTests.swift; sourceTree = "<group>"; };
+		A6EAD346DF0AE0D64914701A /* RouteMapGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteMapGeometryTests.swift; sourceTree = "<group>"; };
 		AAD8F6656A89998C8327A9BA /* WalksGPX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WalksGPX.entitlements; sourceTree = "<group>"; };
+		AE8BFE6D2B9E7E940F62254B /* SyncMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMessaging.swift; sourceTree = "<group>"; };
+		B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteMapGeometry.swift; sourceTree = "<group>"; };
 		B2A266C527CBC9E19DC9D108 /* GPXExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXExporter.swift; sourceTree = "<group>"; };
 		B2DB893E8F07E6E067D59257 /* WalksGPX macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WalksGPX macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC7C67F9A4B31CD29A7A0C3D /* ICloudGPXPublisherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudGPXPublisherTests.swift; sourceTree = "<group>"; };
+		CD8DD558EE8B17C665CD9D9A /* ICloudExportManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudExportManifest.swift; sourceTree = "<group>"; };
 		F087C7DEBF01ECB2BA6FAC09 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F46A96C0C747D340D9B57448 /* GPXExporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXExporterTests.swift; sourceTree = "<group>"; };
 		FCA32A3D61FB12007353380A /* walking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = walking.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -66,9 +102,13 @@
 		019EBC9790E7F1F850281D64 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				1DC863405D4452E37FC9AC3F /* Assets.xcassets */,
 				F087C7DEBF01ECB2BA6FAC09 /* ContentView.swift */,
 				6A6D5144FBB2B22B2D6466AE /* HealthKitService.swift */,
+				81A81134D84C85866E4833BE /* ICloudGPXPublisher.swift */,
 				22D162B88D7009256A5463B1 /* Info.plist */,
+				B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */,
+				AE8BFE6D2B9E7E940F62254B /* SyncMessaging.swift */,
 				4697840ADA7CF0F61CEC919C /* SyncState.swift */,
 				FCA32A3D61FB12007353380A /* walking.json */,
 				AAD8F6656A89998C8327A9BA /* WalksGPX.entitlements */,
@@ -80,6 +120,8 @@
 			isa = PBXGroup;
 			children = (
 				B2A266C527CBC9E19DC9D108 /* GPXExporter.swift */,
+				56354F2B27EFBB47CC677BB3 /* ICloudExportConfiguration.swift */,
+				CD8DD558EE8B17C665CD9D9A /* ICloudExportManifest.swift */,
 				3921DDD98B9F5F76F4330791 /* WalkRoute.swift */,
 				8E70BA13A526EC14C33EB14C /* WalkStore.swift */,
 			);
@@ -99,6 +141,7 @@
 		6081EB7B3162EF47B36B6B70 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				963478AF5EE3AF4BFFB510D5 /* Assets.xcassets */,
 				694C95154CCDEB86E00D718A /* ContentView.swift */,
 				7505B7AA4E6AF35A83F24963 /* Info.plist */,
 				75950D45D9437B8D57E27356 /* WalksGPX.entitlements */,
@@ -109,7 +152,17 @@
 		71F58EF4F4EE54E2AE1BBD40 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				49A6138F07358A3B906E6FD5 /* ContentViewTests.swift */,
+				F46A96C0C747D340D9B57448 /* GPXExporterTests.swift */,
+				8D309041E61AE5B1E9C21CAF /* HealthKitAuthorizationTests.swift */,
+				5F772C3F35459C7A9E5FBB53 /* HealthKitRouteProcessingTests.swift */,
+				2498F4BE2BBD58DE57831632 /* ICloudExportManifestTests.swift */,
+				2724F81D7C4B3C429811CBE9 /* ICloudExportProgressTests.swift */,
+				CC7C67F9A4B31CD29A7A0C3D /* ICloudGPXPublisherTests.swift */,
+				A6EAD346DF0AE0D64914701A /* RouteMapGeometryTests.swift */,
+				13CE42686E7990406B3DB444 /* SyncMessagingTests.swift */,
 				7EBC4C3CFA4ECE8BE6511ADD /* SyncStateStoreTests.swift */,
+				97ED6206110C5ABB9C046160 /* WalkStoreTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -153,6 +206,7 @@
 			buildConfigurationList = DDD1F8DF312BAA0420B98307 /* Build configuration list for PBXNativeTarget "WalksGPX macOS" */;
 			buildPhases = (
 				0A2BDE08A871102D3AA96248 /* Sources */,
+				0598265FA036D4C1A5FBB4C0 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -228,10 +282,19 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0598265FA036D4C1A5FBB4C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43FB1375862C5376A21525EA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		34D9D05934D8BDE2865C64D3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32644EA8EF6925FBDC91C577 /* Assets.xcassets in Resources */,
 				223CEF53BC7CF8578146C537 /* walking.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,6 +308,8 @@
 			files = (
 				577359428F7499323631C38C /* ContentView.swift in Sources */,
 				703A613580FB6A517554E478 /* GPXExporter.swift in Sources */,
+				AF538267EDEDD914E52F093F /* ICloudExportConfiguration.swift in Sources */,
+				FBF332DD6831D4B352F1D809 /* ICloudExportManifest.swift in Sources */,
 				EFC3C944CC9E8AE9B21F5744 /* WalkRoute.swift in Sources */,
 				4CE780D81B87E596056A69E0 /* WalkStore.swift in Sources */,
 			);
@@ -254,7 +319,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33538E947F8D68B67516FEF9 /* ContentViewTests.swift in Sources */,
+				6525A10B1B85BBABB64FD60F /* GPXExporterTests.swift in Sources */,
+				006FB6DF7EDC64657807ACC6 /* HealthKitAuthorizationTests.swift in Sources */,
+				28180F4C14C315D5CD9D633B /* HealthKitRouteProcessingTests.swift in Sources */,
+				FC0B5C6965A4716723981DDB /* ICloudExportManifestTests.swift in Sources */,
+				749376734DD2FBB978E9642F /* ICloudExportProgressTests.swift in Sources */,
+				6A957C814ED7288430D5D8BC /* ICloudGPXPublisherTests.swift in Sources */,
+				5A7835DDDF6828AF39658E5B /* RouteMapGeometryTests.swift in Sources */,
+				C3113ABC032D29ABF0CA627E /* SyncMessagingTests.swift in Sources */,
 				F13E7EE3A82EF00A3D3D6E10 /* SyncStateStoreTests.swift in Sources */,
+				7282FA32BFBA5EC7CB42B768 /* WalkStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +340,11 @@
 				ABFFA058A89ADADC5F12C2A7 /* ContentView.swift in Sources */,
 				47AB8BD458F498DADF458CFB /* GPXExporter.swift in Sources */,
 				A2AF38C10B812A78EB07B748 /* HealthKitService.swift in Sources */,
+				F667C9173DE2D9715922F354 /* ICloudExportConfiguration.swift in Sources */,
+				231EF6B479928856BC7B6821 /* ICloudExportManifest.swift in Sources */,
+				D9D4B020FC782994966FED7D /* ICloudGPXPublisher.swift in Sources */,
+				D07FEC16C6B372D775277DDF /* RouteMapGeometry.swift in Sources */,
+				C51E4CC9DC064DBE2518D644 /* SyncMessaging.swift in Sources */,
 				57FE262F77886FB4538BD7D6 /* SyncState.swift in Sources */,
 				A6718C26BAE3BFFD968FED84 /* WalkRoute.swift in Sources */,
 				5FE32A8B80C044582C411D00 /* WalkStore.swift in Sources */,

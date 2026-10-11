@@ -61,6 +61,18 @@ final class SyncStateStoreTests: XCTestCase {
         XCTAssertFalse(SyncStateStore(defaults: defaults).needsRouteBatchRepair)
     }
 
+    func testFullHistoryBackfillCanBeRequestedAgainWithoutClearingAnchor() {
+        let state = SyncStateStore(defaults: defaults)
+        let anchor = HKQueryAnchor(fromValue: 42)
+        state.save(anchor: anchor)
+        state.markFullHistoryBackfillComplete()
+
+        state.requestFullHistoryBackfill()
+
+        XCTAssertTrue(state.needsFullHistoryBackfill)
+        XCTAssertEqual(state.anchor, anchor)
+    }
+
     func testResetRemovesSavedSyncState() {
         let state = SyncStateStore(defaults: defaults)
         state.save(anchor: HKQueryAnchor(fromValue: 7), at: Date())
@@ -93,6 +105,29 @@ final class SyncStateStoreTests: XCTestCase {
         XCTAssertEqual(state.anchor, anchor)
         XCTAssertTrue(state.pendingRouteIDs.isEmpty)
         XCTAssertEqual(state.lastSyncDate, Date(timeIntervalSince1970: 55))
+    }
+
+    func testCorruptCurrentStateFallsBackToLegacyCheckpoint() {
+        let state = SyncStateStore(defaults: defaults)
+        let anchor = HKQueryAnchor(fromValue: 19)
+        defaults.set(Data("not-json".utf8), forKey: "healthKit.syncState")
+        defaults.set(try! NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true), forKey: "healthKit.workoutAnchor")
+
+        XCTAssertEqual(state.anchor, anchor)
+        XCTAssertTrue(state.pendingRouteIDs.isEmpty)
+        XCTAssertTrue(state.hasConnected)
+    }
+
+    func testAddingNoPendingIDsPreservesState() {
+        let state = SyncStateStore(defaults: defaults)
+        let anchor = HKQueryAnchor(fromValue: 3)
+        let date = Date(timeIntervalSince1970: 8)
+        state.save(anchor: anchor, pendingRouteIDs: [UUID()], at: date)
+
+        state.addPendingRouteIDs([])
+
+        XCTAssertEqual(state.anchor, anchor)
+        XCTAssertEqual(state.lastSyncDate, date)
     }
 
     func testProgressHandlesEmptyAndClampsBounds() {

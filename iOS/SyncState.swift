@@ -24,7 +24,10 @@ final class SyncStateStore {
     private let lastSyncKey = "healthKit.lastSyncDate"
     private let connectedKey = "healthKit.hasConnected"
     private let routeRepairKey = "healthKit.routeBatchRepair.v1"
-    private let historyBackfillKey = "healthKit.fullHistoryBackfill.v1"
+    // v2 intentionally re-runs the historical import once. Earlier builds
+    // created their Core Data description without a SQLite URL, so routes
+    // could disappear after a restart even though the HealthKit anchor stayed.
+    private let historyBackfillKey = "healthKit.fullHistoryBackfill.v2"
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -87,12 +90,17 @@ final class SyncStateStore {
         defaults.set(true, forKey: historyBackfillKey)
     }
 
+    func requestFullHistoryBackfill() {
+        defaults.removeObject(forKey: historyBackfillKey)
+    }
+
     func reset() {
         defaults.removeObject(forKey: stateKey)
         defaults.removeObject(forKey: anchorKey)
         defaults.removeObject(forKey: lastSyncKey)
         defaults.removeObject(forKey: connectedKey)
         defaults.removeObject(forKey: routeRepairKey)
+        defaults.removeObject(forKey: "healthKit.fullHistoryBackfill.v1")
         defaults.removeObject(forKey: historyBackfillKey)
     }
 

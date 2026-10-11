@@ -7,5 +7,14 @@
     <key>CFBundleName</key><string>Walks GPX</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>1.0</string>
-    <key>CFBundleVersion</key><string>1</string>
+    <key>CFBundleVersion</key><string>2</string>
+    <key>NSUbiquitousContainers</key>
+    <dict>
+        <key>iCloud.io.ponti.walksgpx</key>
+        <dict>
+            <key>NSUbiquitousContainerIsDocumentScopePublic</key><true/>
+            <key>NSUbiquitousContainerSupportedFolderLevels</key><string>Any</string>
+            <key>NSUbiquitousContainerName</key><string>Walks GPX</string>
+        </dict>
+    </dict>
 </dict></plist>

@@ -3,7 +3,7 @@ import CoreLocation
 import Foundation
 import HealthKit
 
-private final class RouteBatchAccumulator: @unchecked Sendable {
+final class RouteBatchAccumulator: @unchecked Sendable {
     enum Update {
         case pending
         case completed([CLLocation])
@@ -40,6 +40,20 @@ private final class RouteBatchAccumulator: @unchecked Sendable {
     }
 }
 
+enum RouteLocationConverter {
+    static func points(from locations: [CLLocation]) -> [RouteLocation] {
+        locations.compactMap { location in
+            let point = RouteLocation(
+                latitude: location.coordinate.latitude,
+                longitude: location.coordinate.longitude,
+                elevation: location.altitude.isFinite ? location.altitude : nil,
+                timestamp: location.timestamp
+            )
+            return point.isValidGPXPoint ? point : nil
+        }
+    }
+}
+
 @MainActor
 final class HealthKitService: ObservableObject {
     @Published private(set) var walks: [WalkRoute] = []
@@ -50,29 +64,74 @@ final class HealthKitService: ObservableObject {
     @Published private(set) var hasConnected = false
     @Published var errorMessage: String?
     @Published private(set) var syncMessage: String?
+    @Published private(set) var iCloudExportMessage: String?
+    @Published private(set) var isExportingToICloud = false
+    @Published private(set) var iCloudExportCompletedRouteCount = 0
+    @Published private(set) var iCloudExportTotalRouteCount = 0
 
     var progress: Double {
         SyncProgress(processed: processedWalks, total: totalWalks).fraction
     }
 
+    var iCloudExportProgress: Double? {
+        guard iCloudExportTotalRouteCount > 0 else { return nil }
+        return ICloudExportProgress(
+            completedRoutes: iCloudExportCompletedRouteCount,
+            totalRoutes: iCloudExportTotalRouteCount
+        ).fraction
+    }
+
     private let store = HKHealthStore()
     private let syncState: SyncStateStore
+    private let healthDataAvailable: @Sendable () -> Bool
+    private let requestAuthorization: @Sendable () async throws -> Void
+    private let queryOverrides: HealthKitQueryOverrides?
 
-    init(syncState: SyncStateStore = SyncStateStore()) {
+    init(
+        syncState: SyncStateStore = SyncStateStore(),
+        presentationState: HealthKitPresentationState? = nil,
+        healthDataAvailable: @escaping @Sendable () -> Bool = { HKHealthStore.isHealthDataAvailable() },
+        requestAuthorization: @escaping @Sendable () async throws -> Void = {
+            try await HKHealthStore().requestAuthorization(
+                toShare: [],
+                read: [HKObjectType.workoutType(), HKSeriesType.workoutRoute()]
+            )
+        },
+        queryOverrides: HealthKitQueryOverrides? = nil
+    ) {
         self.syncState = syncState
+        self.healthDataAvailable = healthDataAvailable
+        self.requestAuthorization = requestAuthorization
+        self.queryOverrides = queryOverrides
         hasConnected = syncState.hasConnected
+        if let presentationState {
+            apply(presentationState)
+        }
+    }
+
+    private func apply(_ state: HealthKitPresentationState) {
+        walks = state.walks
+        isLoading = state.isLoading
+        processedWalks = state.processedWalks
+        totalWalks = state.totalWalks
+        pendingRouteCount = state.pendingRouteCount
+        hasConnected = state.hasConnected
+        errorMessage = state.errorMessage
+        syncMessage = state.syncMessage
+        iCloudExportMessage = state.iCloudExportMessage
+        isExportingToICloud = state.isExportingToICloud
+        iCloudExportCompletedRouteCount = state.iCloudExportCompletedRouteCount
+        iCloudExportTotalRouteCount = state.iCloudExportTotalRouteCount
     }
 
     func requestAccessAndLoad() async {
-        guard HKHealthStore.isHealthDataAvailable() else {
+        guard healthDataAvailable() else {
             errorMessage = "Health data isn’t available on this device."
             return
         }
 
         do {
-            let workoutType = HKObjectType.workoutType()
-            let routeType = HKSeriesType.workoutRoute()
-            try await store.requestAuthorization(toShare: [], read: [workoutType, routeType])
+            try await requestAuthorization()
             syncState.markConnected()
             hasConnected = true
             _ = await syncIncrementally()
@@ -97,11 +156,10 @@ final class HealthKitService: ObservableObject {
             let queuedRouteCount = syncState.pendingRouteIDs.count
             totalWalks = queuedRouteCount
             processedWalks = 0
-            syncMessage = shouldBackfillHistory
-                ? "Scanning your full HealthKit walking history…"
-                : queuedRouteCount > 0
-                ? "Loading \(queuedRouteCount) saved walks to repair…"
-                : "Checking HealthKit…"
+            syncMessage = SyncMessaging.starting(
+                backfillingHistory: shouldBackfillHistory,
+                queuedRouteCount: queuedRouteCount
+            )
             let pendingWorkouts = try await fetchPendingWorkouts()
             let historicalWorkouts = shouldBackfillHistory ? try await fetchAllWalkingWorkouts() : []
             let result = try await fetchWorkoutChanges()
@@ -119,9 +177,11 @@ final class HealthKitService: ObservableObject {
 
             totalWalks = max(workouts.count, queuedRouteCount)
             processedWalks = 0
-            syncMessage = workouts.isEmpty ? "No new walking workouts found." : "Found \(workouts.count) walking workout\(workouts.count == 1 ? "" : "s"). Reading GPS routes…"
+            syncMessage = SyncMessaging.foundWorkouts(workouts.count)
 
             let maxConcurrentRouteReads = 4
+            var exportBatch: [WalkRoute] = []
+            var cloudBatchPublishingAvailable = true
             try await withThrowingTaskGroup(of: (UUID, WalkRoute?).self) { group in
                 var nextWorkoutIndex = 0
                 let initialCount = min(maxConcurrentRouteReads, workouts.count)
@@ -142,6 +202,13 @@ final class HealthKitService: ObservableObject {
                     if let route {
                         try WalkStore.shared.save([route])
                         pendingRouteIDs.remove(workoutID)
+                        exportBatch.append(route)
+                        if exportBatch.count >= ICloudGPXPublisher.publicationBatchSize {
+                            if cloudBatchPublishingAvailable {
+                                cloudBatchPublishingAvailable = await publishICloudBatch(exportBatch)
+                            }
+                            exportBatch.removeAll(keepingCapacity: true)
+                        }
                     } else {
                         pendingRouteIDs.insert(workoutID)
                     }
@@ -157,6 +224,10 @@ final class HealthKitService: ObservableObject {
                 }
             }
 
+            if !exportBatch.isEmpty, cloudBatchPublishingAvailable {
+                _ = await publishICloudBatch(exportBatch)
+            }
+
             try WalkStore.shared.delete(ids: deletedIDs)
             syncState.save(anchor: result.anchor, pendingRouteIDs: pendingRouteIDs)
             if shouldBackfillHistory {
@@ -164,15 +235,12 @@ final class HealthKitService: ObservableObject {
             }
             pendingRouteCount = pendingRouteIDs.count
             walks = WalkStore.shared.fetchRoutes()
-            if walks.isEmpty, !workouts.isEmpty {
-                syncMessage = "HealthKit returned \(workouts.count) workouts but no GPS routes. In Health, open Apps and Services > Walks GPX and allow Workouts and Workout Routes. If both are enabled, those workouts may not contain GPS routes."
-            } else if walks.isEmpty {
-                syncMessage = "No walking workouts are visible. Check Health access for Workouts and Workout Routes, then sync again."
-            } else if pendingRouteCount > 0 {
-                syncMessage = "Saved \(walks.count) GPS routes. \(pendingRouteCount) workouts still have no readable route; check Health access for Workout Routes."
-            } else {
-                syncMessage = "Saved \(walks.count) GPS route\(walks.count == 1 ? "" : "s")."
-            }
+            syncMessage = SyncMessaging.completed(
+                savedRouteCount: walks.count,
+                workoutCount: workouts.count,
+                pendingRouteCount: pendingRouteCount
+            )
+            await reconcileICloudExports(routes: walks)
             return true
         } catch is CancellationError {
             syncMessage = "Sync paused. Saved routes will be kept and retried."
@@ -188,6 +256,12 @@ final class HealthKitService: ObservableObject {
         _ = await syncIncrementally()
     }
 
+    func importFullHistory() async {
+        guard !isLoading else { return }
+        syncState.requestFullHistoryBackfill()
+        _ = await syncIncrementally()
+    }
+
     func loadStoredWalks() {
         walks = WalkStore.shared.fetchRoutes()
         if syncState.needsRouteBatchRepair, syncState.anchor != nil {
@@ -199,8 +273,57 @@ final class HealthKitService: ObservableObject {
         pendingRouteCount = syncState.pendingRouteIDs.count
     }
 
+    func retryICloudExport() async {
+        await WalkStore.shared.waitUntilReady()
+        await reconcileICloudExports(routes: WalkStore.shared.fetchRoutes())
+    }
+
+    private func publishICloudBatch(_ routes: [WalkRoute]) async -> Bool {
+        isExportingToICloud = true
+        iCloudExportMessage = "Preparing routes for iCloud Drive…"
+        do {
+            _ = try await ICloudGPXPublisher.shared.publishBatch(routes)
+            iCloudExportMessage = "Preparing \(routes.count) route files for iCloud Drive…"
+            isExportingToICloud = false
+            return true
+        } catch {
+            iCloudExportMessage = "iCloud export will retry. Walks are safe on this iPhone. \(error.localizedDescription)"
+            isExportingToICloud = false
+            return false
+        }
+    }
+
+    private func reconcileICloudExports(routes: [WalkRoute]) async {
+        isExportingToICloud = true
+        iCloudExportCompletedRouteCount = 0
+        iCloudExportTotalRouteCount = routes.count
+        iCloudExportMessage = "Updating the iCloud Drive walk folder…"
+        do {
+            let report = try await ICloudGPXPublisher.shared.reconcile(routes: routes) { [weak self] progress in
+                Task { @MainActor in
+                    self?.iCloudExportCompletedRouteCount = progress.completedRoutes
+                    self?.iCloudExportTotalRouteCount = progress.totalRoutes
+                    self?.iCloudExportMessage = "Updating the iCloud Drive walk folder…"
+                }
+            }
+            iCloudExportCompletedRouteCount = report.routeCount
+            iCloudExportTotalRouteCount = report.routeCount
+            if report.allFilesUploaded {
+                iCloudExportMessage = "\(report.routeCount) walks are available in iCloud Drive · Walks GPX."
+            } else {
+                iCloudExportMessage = "\(report.routeCount) walks are in the iCloud Drive folder; upload is still in progress."
+            }
+        } catch {
+            iCloudExportMessage = "iCloud export needs a retry. Walks are safe on this iPhone. \(error.localizedDescription)"
+        }
+        isExportingToICloud = false
+    }
+
     private func fetchWorkoutChanges() async throws -> (added: [HKWorkout], deleted: [HKDeletedObject], anchor: HKQueryAnchor) {
-        try await withCheckedThrowingContinuation { continuation in
+        if let queryOverrides {
+            return try await queryOverrides.workoutChanges()
+        }
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(added: [HKWorkout], deleted: [HKDeletedObject], anchor: HKQueryAnchor), Error>) in
             let predicate = HKQuery.predicateForWorkouts(with: .walking)
             let query = HKAnchoredObjectQuery(
                 type: .workoutType(),
@@ -227,10 +350,13 @@ final class HealthKitService: ObservableObject {
     }
 
     private func fetchPendingWorkouts() async throws -> [HKWorkout] {
+        if let queryOverrides {
+            return try await queryOverrides.pendingWorkouts()
+        }
         let pendingIDs = syncState.pendingRouteIDs
         guard !pendingIDs.isEmpty else { return [] }
 
-        return try await withCheckedThrowingContinuation { continuation in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKWorkout], Error>) in
             let predicate = HKQuery.predicateForObjects(with: pendingIDs)
             let query = HKSampleQuery(sampleType: .workoutType(), predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, error in
                 if let error {
@@ -244,7 +370,10 @@ final class HealthKitService: ObservableObject {
     }
 
     private func fetchAllWalkingWorkouts() async throws -> [HKWorkout] {
-        try await withCheckedThrowingContinuation { continuation in
+        if let queryOverrides {
+            return try await queryOverrides.allWalkingWorkouts()
+        }
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKWorkout], Error>) in
             let query = HKSampleQuery(
                 sampleType: .workoutType(),
                 predicate: HKQuery.predicateForWorkouts(with: .walking),
@@ -262,7 +391,10 @@ final class HealthKitService: ObservableObject {
     }
 
     private func fetchRoute(for workout: HKWorkout) async throws -> WalkRoute? {
-        try await withCheckedThrowingContinuation { continuation in
+        if let queryOverrides {
+            return try await queryOverrides.route(workout)
+        }
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<WalkRoute?, Error>) in
             let predicate = HKQuery.predicateForObjects(from: workout)
             let query = HKSampleQuery(sampleType: HKSeriesType.workoutRoute(), predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { [store] _, samples, error in
                 if let error {
@@ -284,14 +416,7 @@ final class HealthKitService: ObservableObject {
                         case .failed(let error):
                             continuation.resume(throwing: error)
                         case .completed(let locations):
-                            let points = locations.map { location in
-                            RouteLocation(
-                                latitude: location.coordinate.latitude,
-                                longitude: location.coordinate.longitude,
-                                elevation: location.altitude.isFinite ? location.altitude : nil,
-                                timestamp: location.timestamp
-                            )
-                        }
+                            let points = RouteLocationConverter.points(from: locations)
                             guard points.count >= 2 else {
                                 continuation.resume(returning: nil)
                                 return
@@ -305,6 +430,28 @@ final class HealthKitService: ObservableObject {
             store.execute(query)
         }
     }
+}
+
+struct HealthKitQueryOverrides {
+    let workoutChanges: () async throws -> (added: [HKWorkout], deleted: [HKDeletedObject], anchor: HKQueryAnchor)
+    let pendingWorkouts: () async throws -> [HKWorkout]
+    let allWalkingWorkouts: () async throws -> [HKWorkout]
+    let route: (HKWorkout) async throws -> WalkRoute?
+}
+
+struct HealthKitPresentationState {
+    var walks: [WalkRoute] = []
+    var isLoading = false
+    var processedWalks = 0
+    var totalWalks = 0
+    var pendingRouteCount = 0
+    var hasConnected = false
+    var errorMessage: String?
+    var syncMessage: String?
+    var iCloudExportMessage: String?
+    var isExportingToICloud = false
+    var iCloudExportCompletedRouteCount = 0
+    var iCloudExportTotalRouteCount = 0
 }
 
 enum SyncError: LocalizedError {

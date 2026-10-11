@@ -12,9 +12,9 @@ enum GPXExporter {
           <trk><name>Walk \(dateFormatter.string(from: route.startDate))</name><trkseg>
         """
 
-        for point in route.locations {
+        for point in route.locations where point.isValidGPXPoint {
             xml += "\n    <trkpt lat=\"\(point.latitude)\" lon=\"\(point.longitude)\">"
-            if let elevation = point.elevation { xml += "<ele>\(elevation)</ele>" }
+            if let elevation = point.elevation, elevation.isFinite { xml += "<ele>\(elevation)</ele>" }
             xml += "<time>\(dateFormatter.string(from: point.timestamp))</time></trkpt>"
         }
 
