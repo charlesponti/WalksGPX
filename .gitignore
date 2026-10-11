@@ -1,0 +1,22 @@
+# macOS and editor noise
+.DS_Store
+*.swp
+*.swo
+*.orig
+
+# Xcode per-user state and build products
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+.build/
+*.xcresult/
+*.app/
+*.dSYM/
+*.ipa
+
+# Local signing material and secrets
+*.p12
+*.mobileprovision
+.env
+.env.*
