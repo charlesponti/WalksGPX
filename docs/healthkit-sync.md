@@ -49,6 +49,13 @@ long backfills. If a route has no available route series, its UUID remains in
 the retry set. Successful retries remove the UUID. The UI reports pending
 route counts and a diagnostic message (`iOS/HealthKitService.swift:165-175`).
 
+Newly saved routes are mirrored to iCloud Drive in groups of 100. After local
+HealthKit work completes, a full snapshot reconciliation repairs missing GPX
+files and manifest entries and removes generated exports for deleted workouts
+(`iOS/HealthKitService.swift:124-187`, `iOS/ICloudGPXPublisher.swift:45-92`).
+iCloud errors do not prevent local anchor advancement; startup and later sync
+reconcile from Core Data (`iOS/HealthKitService.swift:193-229`).
+
 ## Cancellation, errors, progress
 
 Progress counts completed workout-route attempts against the workout count,
@@ -68,3 +75,6 @@ HealthKit read authorization is intentionally read-only. The app cannot prove
 that a user granted read access from the authorization request's success
 alone. A workout with duration/distance can legitimately have no saved GPS
 route. Simulator testing cannot validate the user's actual HealthKit dataset.
+Local iCloud write completion also does not guarantee remote upload completion;
+the UI checks ubiquitous-item upload metadata and reports pending delivery
+(`iOS/ICloudGPXPublisher.swift:198-204`).

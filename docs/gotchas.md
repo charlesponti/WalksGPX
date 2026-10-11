@@ -35,9 +35,18 @@ Anchored queries return changes since a checkpoint, not a guaranteed full
 inventory. A stale anchor can make old workouts invisible to incremental
 sync. The implementation therefore performs one full history query on first
 sync and merges it with pending and anchored records
-(`iOS/HealthKitService.swift:94-122`, `246-262`). In the device recovery
-session, this backfill discovered 2,855 walking workouts; that is an observed
-dataset-specific result, not a count guaranteed for other users.
+(`iOS/HealthKitService.swift:94-122`, `252-268`). Use the toolbar's **Import
+all history** command whenever an explicit repair is needed; it leaves saved
+routes in place and re-upserts by workout UUID.
+
+## A sync anchor is not route-store proof
+
+The HealthKit anchor is stored independently of Core Data. If routes are
+missing while the anchor remains, an incremental query may return only a new
+walk and make a historical import look unavailable. A durable Core Data SQLite
+URL is therefore mandatory, and build 2 advances the one-time backfill marker
+to recover installations affected by the earlier in-memory description
+(`Shared/WalkStore.swift:54-78`, `iOS/SyncState.swift:25-92`).
 
 ## Route callbacks are batched and routes can be multiple
 
@@ -66,9 +75,20 @@ backfill.
 ## Local database is not cross-device sync
 
 The app uses local Core Data despite CloudKit entitlements. The Mac's local
-database does not receive the iPhone database. GPX file sharing is the transfer
-mechanism (`Shared/WalkStore.swift:54-65`, `macOS/ContentView.swift:43-73`).
-Uninstalling can remove local data; export important routes.
+database does not receive the iPhone database. The iPhone now mirrors route
+GPX files and a manifest to iCloud Drive; this is file-level export, not Core
+Data synchronization (`Shared/WalkStore.swift:54-65`,
+`iOS/ICloudGPXPublisher.swift:45-92`). Files appear only after iCloud uploads
+them, so a successful local write can still be waiting for delivery. Keep the
+phone and Mac signed into the same Apple Account with iCloud Drive enabled.
+Uninstalling can remove local Core Data; the iCloud copy remains subject to
+the user's iCloud account and deletion choices.
+
+The app-visible folder is the ubiquity container's `Documents` directory; the
+container metadata supplies the displayed folder name `Walks GPX`. Do not add
+another same-named nested directory. The manifest uses relative UUID-based
+filenames so agents can resolve files without depending on a machine-local
+absolute path (`Shared/ICloudExportConfiguration.swift:1-11`).
 
 ## Test boundary
 

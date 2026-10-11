@@ -12,8 +12,11 @@ updated: 2026-10-11
 # macOS GPX workflow
 
 The Mac app is a file organizer/export surface; it does not read HealthKit.
-Use the iPhone app to sync routes, then share GPX files to the Mac or open
-existing GPX files there (`README.md:5-7`).
+The iPhone app mirrors routes to the user's iCloud Drive folder named
+**Walks GPX**. On the Mac, open that folder in iCloud Drive/Finder or read
+`manifest.json` and its referenced GPX files from an agent that has local
+access. The iPhone share sheet and manual GPX import remain available as
+fallbacks (`iOS/ICloudGPXPublisher.swift:94-103`, `macOS/ContentView.swift:43-50`).
 
 1. In the Mac app, choose **+** and select one or more `.gpx` files.
 2. Select a walk in the sidebar.
@@ -25,4 +28,5 @@ writes the selected bytes to the destination (`macOS/ContentView.swift:65-73`).
 GPX parsing/validation and map rendering are not implemented; imported data is
 preserved as bytes. The Mac view also lists routes found by `WalkStore` when
 available (`macOS/ContentView.swift:51-63`), but that store is local to the
-Mac install and does not automatically mirror the iPhone store.
+Mac install and does not automatically mirror the iPhone store. iCloud arrival
+is asynchronous and may lag behind the iPhone's local export status.

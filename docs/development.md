@@ -39,10 +39,12 @@ xcodebuild -project WalksGPX.xcodeproj -scheme 'WalksGPX iOS' -destination 'plat
 
 The exact available simulator name varies by installed Xcode; inspect with
 `xcrun simctl list devices available` and substitute an installed device. The
-test target currently covers sync-state encoding/compatibility and progress
-bounds (`Tests/SyncStateStoreTests.swift:5-104`), not all application behavior
-or “100% coverage.” HealthKit authorization and actual workout data need
-physical-device checks.
+test target covers sync-state encoding/compatibility, progress bounds, and
+manifest sorting, UUID de-duplication, ISO-8601 round-tripping, empty state,
+and schema rejection (`Tests/SyncStateStoreTests.swift:5-104`,
+`Tests/ICloudExportManifestTests.swift:1-90`). It does not exercise iCloud
+account access or file coordination. HealthKit authorization, upload delivery,
+and cross-device folder visibility need physical-device checks.
 
 ## Device smoke test
 
@@ -52,6 +54,12 @@ shows progress, and saves route walks. Check a known long GPS-recorded walk
 with a preview and export a GPX file, then inspect its track points. For a
 long initial history, keep the app foregrounded while it scans; background
 refresh time is not guaranteed.
+
+For iCloud export, verify the signed app includes the `iCloud.io.ponti.walksgpx`
+ubiquity-container entitlement, that Files shows **Walks GPX**, and that
+`manifest.json` references every `walk-<uuid>.gpx` file. Confirm the Mac sees
+the same manifest after iCloud upload completes; local file creation is not
+proof of remote delivery.
 
 Do not commit `DerivedData`, `xcuserdata`, signing identities, provisioning
 profiles, or environment secrets. `.gitignore` covers common local artifacts;

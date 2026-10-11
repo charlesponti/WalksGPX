@@ -12,14 +12,14 @@ Apple does not let macOS apps read the HealthKit store. The iOS target is theref
 2. Run `xcodegen generate` in this directory.
 3. Open `WalksGPX.xcodeproj`.
 4. Select your team for the iOS target and enable the HealthKit capability if Xcode asks.
-5. Run the iOS target on an iPhone with walking routes in Health, tap **Connect Health**, and share a GPX file to the Mac.
-6. Run the macOS target and import the GPX file.
+5. Run the iOS target on an iPhone with walking routes in Health and tap **Connect Health**.
+6. Find automatic GPX files and `manifest.json` in the **Walks GPX** folder in iCloud Drive on the Mac. Manual share-sheet export and Mac import remain available.
 
 The iOS app requests only read access. It uses an anchored HealthKit workout query so the first sync reads the history and later syncs process only changes. Routes are saved as they arrive; workouts whose route is not ready are kept in a durable retry queue. A scheduled `BGAppRefreshTask` retries incremental sync in the background when iOS grants runtime and cancels cleanly if the system expires the task.
 
 ## Local persistence
 
-Walks are persisted in a local Core Data store on the iPhone. This keeps HealthKit sync reliable even when iCloud is unavailable; GPX files are shared directly to the Mac from the iPhone.
+Walks are persisted in a local Core Data store on the iPhone. This keeps HealthKit sync reliable even when iCloud is unavailable. A retryable file mirror publishes GPX routes and `manifest.json` to the user's iCloud Drive **Walks GPX** folder; iCloud delivery is asynchronous.
 
 ## Tests
 

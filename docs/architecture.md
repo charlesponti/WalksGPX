@@ -25,7 +25,10 @@ versions, resources, and the Lottie package in `project.yml:1-60`.
 - **Shared code** (`Shared/`): `WalkRoute` and `RouteLocation` define the
   portable value model (`Shared/WalkRoute.swift:3-31`); `WalkStore` provides
   local Core Data persistence (`Shared/WalkStore.swift:23-127`); `GPXExporter`
-  serializes routes (`Shared/GPXExporter.swift:3-23`).
+  serializes routes (`Shared/GPXExporter.swift:3-23`); the versioned
+  `manifest.json` model and UUID file naming live in
+  `Shared/ICloudExportManifest.swift:3-101` and
+  `Shared/ICloudExportConfiguration.swift:1-11`.
 - **macOS app** (`macOS/`): imports GPX files or reads locally persisted routes
   when available, then presents a Save panel (`macOS/ContentView.swift:14-74`).
   macOS itself cannot read the iPhone's HealthKit database, so it is not the
@@ -44,10 +47,13 @@ anchor is committed (`iOS/HealthKitService.swift:94-165`, `264-307`). This
 ordering allows a failed route/database operation to be retried instead of
 advancing past unsaved data. Details: [HealthKit sync](healthkit-sync.md).
 
-The iOS list is populated from Core Data and each route can be emitted as GPX.
-The Mac imports GPX or can read its own local store; there is no automatic
-phone-to-Mac database replication. Move files using the iOS share sheet,
-AirDrop, Files, or another share destination.
+The iOS app mirrors local routes to the user's visible iCloud Drive `Walks GPX`
+folder as UUID-named GPX files plus `manifest.json`. Core Data remains the
+source of truth; iCloud is a retryable file mirror. Agents can read the
+manifest and its relative GPX filenames from that folder. The Mac's Core Data
+store is still local and does not mirror the phone database. Export behavior
+is implemented in `iOS/ICloudGPXPublisher.swift:8-214` and its target metadata
+in `iOS/Info.plist:15-34`.
 
 ## Operational boundaries
 
