@@ -1,0 +1,28 @@
+title: Walked Here
+description: A field guide to GPS tracks, spatial aggregation, and personal walking maps.
+url: https://charlesponti.github.io
+baseurl: /WalksGPX
+markdown: kramdown
+permalink: pretty
+
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: field-guide
+
+exclude:
+  - FORMAT.md
+  - architecture.md
+  - development.md
+  - gotchas.md
+  - gpx-routes.md
+  - healthkit-access.md
+  - healthkit-sync.md
+  - icloud-sync-plan.md
+  - icloud-sync-research.md
+  - macos-workflow.md
+  - persistence.md
+  - walk-library-redesign.md
+  - design/

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f0e7">
+    <meta name="description" content="{{ page.summary | escape }}">
+    <title>{{ page.title | escape }} · Walked Here</title>
+    <link rel="stylesheet" href="{{ '/assets/field-guide.css' | relative_url }}">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the lesson</a>
+    <div class="site-shell">
+      <header class="masthead">
+        <a class="wordmark" href="{{ '/' | relative_url }}">WALKED HERE<span>FIELD GUIDE · 01—05</span></a>
+        <p class="mast-note">A map of where you have been<br>begins with a question.</p>
+      </header>
+
+      <nav class="lesson-nav" aria-label="Field guide lessons">
+        <a href="{{ '/learn/geopositioning/' | relative_url }}" {% if page.url contains 'geopositioning' %}aria-current="page"{% endif %}><span>01</span> Position</a>
+        <a href="{{ '/learn/points-to-paths/' | relative_url }}" {% if page.url contains 'points-to-paths' %}aria-current="page"{% endif %}><span>02</span> Track</a>
+        <a href="{{ '/learn/what-heat-means/' | relative_url }}" {% if page.url contains 'what-heat-means' %}aria-current="page"{% endif %}><span>03</span> Measure</a>
+        <a href="{{ '/learn/cells-and-distance/' | relative_url }}" {% if page.url contains 'cells-and-distance' %}aria-current="page"{% endif %}><span>04</span> Space</a>
+        <a href="{{ '/learn/from-data-to-map/' | relative_url }}" {% if page.url contains 'from-data-to-map' %}aria-current="page"{% endif %}><span>05</span> Render</a>
+      </nav>
+
+      <main id="main" class="reading">
+        {% unless page.url == '/' %}<p class="kicker">THE WALKING MAP PRIMER <span>·</span> {{ page.tags | first | upcase }}</p>{% endunless %}
+        {{ content }}
+        {% unless page.url == '/' %}
+          <div class="endmark" aria-hidden="true">——</div>
+          <p class="return-link"><a href="{{ '/' | relative_url }}">← Back to the field guide</a></p>
+        {% endunless %}
+      </main>
+
+      <footer class="site-footer">
+        <span>Five lessons. No live location data.</span>
+        <a href="https://github.com/charlesponti/WalksGPX">SOURCE & NOTES ↗</a>
+      </footer>
+    </div>
+  </body>
+</html>
