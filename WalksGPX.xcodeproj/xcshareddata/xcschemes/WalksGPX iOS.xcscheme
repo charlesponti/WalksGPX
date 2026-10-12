@@ -52,7 +52,11 @@
          </TestableReference>
       </Testables>
       <CommandLineArguments>
+         <CommandLineArgument argument="--walksgpx-disable-cloudkit" isEnabled="YES"/>
       </CommandLineArguments>
+      <EnvironmentVariables>
+         <EnvironmentVariable key="WALKSGPX_DISABLE_CLOUDKIT" value="1" isEnabled="YES"/>
+      </EnvironmentVariables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"

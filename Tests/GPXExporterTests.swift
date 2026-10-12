@@ -1,5 +1,9 @@
 import XCTest
+#if os(iOS)
 @testable import WalksGPX_iOS
+#else
+@testable import WalksGPX_macOS
+#endif
 
 final class GPXExporterTests: XCTestCase {
     func testExportIncludesMetadataTrackPointsAndFiniteElevation() {

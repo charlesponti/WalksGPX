@@ -13,10 +13,22 @@ updated: 2026-10-11
 
 WalksGPX requests read access only (`toShare: []`) for walking workout
 samples and workout-route series (`iOS/HealthKitService.swift:66-82`). The
-usage explanation in `iOS/Info.plist:27-28` says that workouts and routes are
-read to export them as GPX. HealthKit data remains on-device in the local
-Core Data store; the app does not upload it to a service
-(`Shared/WalkStore.swift:54-65`).
+usage explanation in `iOS/Info.plist` says that workouts and routes are read to
+export them as GPX. The app reads HealthKit on iPhone only; saved route records
+are stored locally and mirrored to the user's CloudKit private database for
+the companion Mac app. The separate iCloud Drive GPX export is for portable
+files. WalksGPX does not send HealthKit data to a third-party service.
+
+**Distribution boundary:** Apple's current [App Review Guidelines, section
+5.1.3(ii)](https://developer.apple.com/app-store/review/guidelines/uk/)
+state that apps may not store personal health information in iCloud. This
+prototype's CloudKit mirroring and existing iCloud Drive GPX publication both
+put HealthKit-derived route/location data in iCloud. They are being used only
+for the owner's private prototype and are **not an App Store-ready design**.
+Before distributing the app, remove that iCloud storage or obtain authoritative
+guidance from Apple on an allowed design. Keep this caveat visible in future
+architecture and release reviews; private-database scope does not by itself
+waive the guideline.
 
 ## Connect and permissions
 

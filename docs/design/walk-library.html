@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Walks GPX · Library proposal</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      --ink: #172330;
+      --muted: #6e7a86;
+      --line: #e1e7eb;
+      --paper: #fff;
+      --ground: #f3f5f5;
+      --blue: #1675f8;
+      --blue-soft: #e9f2ff;
+      --river: #b8def0;
+      --park: #d7e8d4;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #e7ecef; color: var(--ink); }
+    button { font: inherit; cursor: pointer; }
+    .workspace { padding: 34px 28px 46px; }
+    .intro { max-width: 1320px; margin: 0 auto 20px; display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+    .eyebrow { margin: 0 0 6px; color: #536978; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .intro h1 { font-size: 27px; letter-spacing: -.04em; margin: 0; line-height: 1.13; }
+    .intro p { margin: 7px 0 0; color: #617281; font-size: 13px; }
+    .switch { display: flex; gap: 4px; padding: 4px; background: #dbe3e8; border-radius: 12px; }
+    .switch button { border: 0; background: transparent; color: #536574; border-radius: 9px; padding: 8px 13px; font-size: 12px; font-weight: 700; }
+    .switch button.active { background: white; color: #1e303d; box-shadow: 0 1px 4px #2437481a; }
+    .device { max-width: 1320px; height: min(790px, 76vh); min-height: 610px; margin: auto; overflow: hidden; display: grid; grid-template-columns: 196px 320px minmax(0, 1fr); background: var(--paper); border: 1px solid #cbd4da; border-radius: 17px; box-shadow: 0 24px 65px #142b3e21, 0 2px 10px #142b3e0a; }
+    .months { background: #f6f8f9; border-right: 1px solid var(--line); padding: 21px 12px; overflow: auto; }
+    .traffic { display: flex; gap: 7px; padding: 0 8px 30px; }
+    .traffic span { width: 10px; height: 10px; border-radius: 50%; background: #d8dee2; }
+    .rail-title { font-size: 14px; font-weight: 800; padding: 0 10px 20px; letter-spacing: -.02em; }
+    .year { margin: 13px 10px 6px; font-size: 10px; color: #98a5ae; font-weight: 800; letter-spacing: .12em; }
+    .month { border: 0; width: 100%; padding: 9px 10px; display: flex; align-items: center; justify-content: space-between; background: transparent; color: #526471; border-radius: 9px; text-align: left; font-size: 12px; }
+    .month strong { color: #9aabb6; font-size: 11px; font-weight: 650; }
+    .month.active { background: #dbeaff; color: #135fc4; font-weight: 750; }
+    .month.active strong { color: #135fc4; }
+    .library { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+    .library-head { border-bottom: 1px solid var(--line); padding: 22px 22px 15px; }
+    .topline { display: flex; align-items: center; justify-content: space-between; }
+    .topline h2 { margin: 0; font-size: 21px; letter-spacing: -.04em; }
+    .topline small { color: var(--muted); font-size: 11px; font-weight: 650; }
+    .search { margin-top: 17px; display: flex; align-items: center; gap: 9px; padding: 10px 11px; border: 1px solid var(--line); border-radius: 10px; color: #9ba8b1; font-size: 12px; }
+    .search svg { width: 15px; height: 15px; stroke: currentColor; }
+    .walk-list { overflow-y: auto; padding: 5px 10px 12px; min-height: 0; }
+    .day { color: #91a0aa; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin: 18px 12px 6px; }
+    .walk { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 11px; padding: 11px 12px; color: var(--ink); }
+    .walk:hover { background: #f6f9fb; }
+    .walk.active { background: var(--blue-soft); border-color: #cbdfff; }
+    .walk .time { width: 42px; color: #647582; font-size: 11px; font-variant-numeric: tabular-nums; flex: none; }
+    .walk.active .time { color: #2867bd; }
+    .walk .copy { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+    .walk .copy b { font-size: 13px; letter-spacing: -.015em; }
+    .walk .copy small { color: var(--muted); font-size: 11px; }
+    .walk .arrow { color: #aebac2; font-size: 18px; line-height: 1; }
+    .walk.active .arrow { color: var(--blue); }
+    .detail { min-width: 0; display: flex; flex-direction: column; overflow-y: auto; background: #fff; }
+    .detail-bar { height: 69px; flex: none; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .detail-bar .path { color: #798a96; font-size: 12px; }
+    .detail-bar .path b { color: #2e4351; font-weight: 650; }
+    .icon-button { display: grid; place-items: center; width: 33px; height: 33px; background: #f4f6f7; border: 1px solid #e8edef; border-radius: 9px; color: #627783; }
+    .icon-button svg { width: 16px; height: 16px; }
+    .detail-body { padding: 26px 28px 26px; max-width: 900px; width: 100%; margin: auto; }
+    .detail-heading { display: flex; justify-content: space-between; align-items: start; gap: 20px; }
+    .detail-heading .date { color: #6c7f8d; font-size: 12px; font-weight: 650; margin: 0 0 5px; }
+    .detail-heading h2 { font-size: 31px; line-height: 1.07; letter-spacing: -.055em; margin: 0; }
+    .detail-heading .sub { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    .primary { background: var(--ink); color: white; border: 0; border-radius: 10px; padding: 11px 15px; font-size: 12px; font-weight: 720; white-space: nowrap; }
+    .primary:focus-visible, button:focus-visible { outline: 3px solid #70aeff; outline-offset: 2px; }
+    .map { margin-top: 23px; height: clamp(290px, 43vh, 430px); border-radius: 17px; overflow: hidden; border: 1px solid #d6e0e4; background: #f2f5ef; position: relative; }
+    .map svg { display: block; width: 100%; height: 100%; }
+    .map .credit { position: absolute; bottom: 9px; left: 12px; background: #ffffffdb; padding: 4px 7px; color: #82929c; font-size: 9px; border-radius: 5px; }
+    .map .map-tools { position: absolute; top: 12px; right: 12px; display: grid; gap: 5px; }
+    .map .map-tools span { background: white; border-radius: 8px; width: 28px; height: 28px; display: grid; place-items: center; color: #485c6a; box-shadow: 0 1px 4px #2234431c; font-size: 16px; }
+    .details-row { display: flex; gap: 28px; padding-top: 18px; }
+    .metric { min-width: 110px; }
+    .metric span { display: block; color: #93a1aa; text-transform: uppercase; letter-spacing: .1em; font-weight: 800; font-size: 9px; margin-bottom: 5px; }
+    .metric b { font-size: 15px; letter-spacing: -.02em; }
+    .month-picker { border: 0; background: transparent; padding: 0; color: var(--ink); font-size: 21px; font-weight: 750; letter-spacing: -.04em; }
+    .month-picker span { color: #879aa7; font-size: 13px; padding-left: 2px; }
+    .phone-top, .phone-back, .phone-bottom { display: none; }
+    .caption { max-width: 1320px; margin: 16px auto 0; color: #637481; font-size: 12px; line-height: 1.6; }
+    .caption strong { color: #2b4150; }
+    .device.phone { display: block; width: 390px; height: 790px; min-height: 0; border-radius: 38px; border: 7px solid #172734; box-shadow: 0 28px 70px #142b3e33; position: relative; }
+    .device.phone .months { display: none; }
+    .device.phone .library { border-right: 0; height: 100%; }
+    .device.phone .library-head { padding: 46px 20px 16px; }
+    .device.phone .topline h2 { font-size: 21px; }
+    .device.phone .search { margin-top: 14px; }
+    .device.phone .phone-top { display: flex; position: absolute; top: 12px; left: 22px; right: 22px; justify-content: space-between; align-items: center; font-size: 10px; font-weight: 800; z-index: 4; }
+    .device.phone .phone-bottom { display: block; position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 118px; height: 4px; border-radius: 20px; background: #263745; z-index: 5; }
+    .device.phone .detail { display: none; }
+    .device.phone.show-detail .library { display: none; }
+    .device.phone.show-detail .detail { display: flex; height: 100%; }
+    .device.phone .detail-bar { padding: 43px 20px 0; height: 87px; }
+    .device.phone .detail-bar .path { display: none; }
+    .device.phone .phone-back { display: inline-flex; border: 0; background: transparent; color: #236dd2; font-weight: 700; padding: 6px 0; }
+    .device.phone .detail-body { padding: 23px 19px; }
+    .device.phone .detail-heading h2 { font-size: 26px; }
+    .device.phone .detail-heading .primary { display: none; }
+    .device.phone .map { height: 355px; margin-top: 23px; }
+    .device.phone .details-row { gap: 12px; }
+    .device.phone .metric { min-width: 88px; }
+    .device.phone .mobile-export { display: block; margin-top: 22px; width: 100%; }
+    .mobile-export { display: none; }
+    @media (max-width: 850px) {
+      .workspace { padding: 18px 10px; }
+      .intro { padding: 0 8px; align-items: start; }
+      .intro h1 { font-size: 21px; }
+      .device:not(.phone) { grid-template-columns: 155px 250px minmax(0, 1fr); }
+      .detail-body { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="workspace">
+    <header class="intro">
+      <div>
+        <p class="eyebrow">Walks GPX / Concept · Not built</p>
+        <h1>A walking archive that feels instant.</h1>
+        <p>Choose a month, choose a walk, see its route. The library never waits for a map.</p>
+      </div>
+      <div class="switch" aria-label="Preview device">
+        <button id="mac-button" class="active" type="button">Mac</button>
+        <button id="phone-button" type="button">iPhone</button>
+      </div>
+    </header>
+    <div id="device" class="device">
+      <div class="phone-top"><span>9:41</span><span>●●●  Wi-Fi  ▰</span></div>
+      <aside class="months" aria-label="Months">
+        <div class="traffic"><span></span><span></span><span></span></div>
+        <div class="rail-title">Walks GPX</div>
+        <div class="year">2026</div>
+        <button class="month active" type="button"><span>October</span><strong>29</strong></button>
+        <button class="month" type="button"><span>September</span><strong>60</strong></button>
+        <button class="month" type="button"><span>August</span><strong>47</strong></button>
+        <button class="month" type="button"><span>July</span><strong>57</strong></button>
+        <button class="month" type="button"><span>June</span><strong>55</strong></button>
+        <button class="month" type="button"><span>May</span><strong>62</strong></button>
+        <div class="year">2025</div>
+        <button class="month" type="button"><span>December</span><strong>60</strong></button>
+        <button class="month" type="button"><span>November</span><strong>46</strong></button>
+      </aside>
+      <section class="library" aria-label="Walk list">
+        <div class="library-head">
+          <div class="topline"><h2><button class="month-picker" type="button" aria-label="Choose month">October <span>⌄</span></button></h2><small>29 walks</small></div>
+          <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span>Search walks</span></div>
+        </div>
+        <div class="walk-list">
+          <div class="day">Sunday 11 October</div>
+          <button class="walk active" type="button" data-day="Sunday 11 October" data-title="Morning walk" data-time="7:30–9:50 am" data-length="2h 20m" data-route="GPS route saved"><span class="time">7:30</span><span class="copy"><b>Morning walk</b><small>2h 20m · GPS route</small></span><span class="arrow">›</span></button>
+          <div class="day">Saturday 10 October</div>
+          <button class="walk" type="button" data-day="Saturday 10 October" data-title="Afternoon walk" data-time="4:17–6:09 pm" data-length="1h 52m" data-route="GPS route saved"><span class="time">16:17</span><span class="copy"><b>Afternoon walk</b><small>1h 52m · GPS route</small></span><span class="arrow">›</span></button>
+          <button class="walk" type="button" data-day="Saturday 10 October" data-title="Lunchtime walk" data-time="1:25–1:54 pm" data-length="29m" data-route="GPS route saved"><span class="time">13:25</span><span class="copy"><b>Lunchtime walk</b><small>29m · GPS route</small></span><span class="arrow">›</span></button>
+          <button class="walk" type="button" data-day="Saturday 10 October" data-title="Morning walk" data-time="7:45–10:07 am" data-length="2h 22m" data-route="GPS route saved"><span class="time">7:45</span><span class="copy"><b>Morning walk</b><small>2h 22m · GPS route</small></span><span class="arrow">›</span></button>
+          <div class="day">Friday 9 October</div>
+          <button class="walk" type="button" data-day="Friday 9 October" data-title="Afternoon walk" data-time="4:32–5:43 pm" data-length="1h 11m" data-route="GPS route saved"><span class="time">16:32</span><span class="copy"><b>Afternoon walk</b><small>1h 11m · GPS route</small></span><span class="arrow">›</span></button>
+          <button class="walk" type="button" data-day="Friday 9 October" data-title="Lunchtime walk" data-time="1:49–2:21 pm" data-length="32m" data-route="GPS route saved"><span class="time">13:49</span><span class="copy"><b>Lunchtime walk</b><small>32m · GPS route</small></span><span class="arrow">›</span></button>
+          <button class="walk" type="button" data-day="Friday 9 October" data-title="Morning walk" data-time="7:57–8:26 am" data-length="29m" data-route="GPS route saved"><span class="time">7:57</span><span class="copy"><b>Morning walk</b><small>29m · GPS route</small></span><span class="arrow">›</span></button>
+          <div class="day">Thursday 8 October</div>
+          <button class="walk" type="button" data-day="Thursday 8 October" data-title="Evening walk" data-time="4:56–5:55 pm" data-length="59m" data-route="GPS route saved"><span class="time">16:56</span><span class="copy"><b>Evening walk</b><small>59m · GPS route</small></span><span class="arrow">›</span></button>
+        </div>
+      </section>
+      <section class="detail" aria-label="Selected walk">
+        <div class="detail-bar">
+          <span class="path">October 2026 <span aria-hidden="true">/</span> <b id="bar-day">11 October</b></span>
+          <button class="phone-back" id="back-button" type="button">‹ Walks</button>
+          <button class="icon-button" type="button" aria-label="More walk actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
+        </div>
+        <div class="detail-body">
+          <div class="detail-heading">
+            <div><p class="date" id="detail-date">Sunday 11 October</p><h2 id="detail-title">Morning walk</h2><p class="sub" id="detail-time">7:30–9:50 am</p></div>
+            <button class="primary" type="button">Export GPX ↗</button>
+          </div>
+          <div class="map" role="img" aria-label="Illustrative map showing a single selected walk route">
+            <svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="900" height="500" fill="#eef1e9"/>
+              <path d="M-20 40Q190 95 294 25L370-30H460L368 130Q249 164 210 255L160 370H-30Z" fill="#dbeacf"/>
+              <path d="M715-30Q746 60 835 55L945 70V322Q833 255 783 178Q754 134 690 110Z" fill="#d9e8d6"/>
+              <g stroke="#fff" stroke-width="15" fill="none" opacity=".9">
+                <path d="M-30 218 930 212"/><path d="M-30 355 930 360"/><path d="M110-30 155 530"/><path d="M394-30 439 520"/><path d="M618-30 624 540"/><path d="M775-30 777 540"/>
+                <path d="M-20 480Q130 392 285 425T601 440Q770 455 920 405"/>
+                <path d="M-30 105Q135 156 270 134T550 104Q710 72 930 130"/>
+              </g>
+              <g stroke="#d4dad5" stroke-width="2" fill="none" opacity=".95">
+                <path d="M-30 218 930 212"/><path d="M-30 355 930 360"/><path d="M110-30 155 530"/><path d="M394-30 439 520"/><path d="M618-30 624 540"/><path d="M775-30 777 540"/>
+                <path d="M-20 480Q130 392 285 425T601 440Q770 455 920 405"/>
+                <path d="M-30 105Q135 156 270 134T550 104Q710 72 930 130"/>
+              </g>
+              <path d="M-20 278Q180 236 270 246Q344 252 407 288T600 276Q718 242 920 271" fill="none" stroke="#b7deee" stroke-width="67"/>
+              <path d="M-20 278Q180 236 270 246Q344 252 407 288T600 276Q718 242 920 271" fill="none" stroke="#d8eff8" stroke-width="42"/>
+              <path d="M456 35 455 100 512 119 520 170 492 201 475 254 462 302 485 334 537 337 542 397 597 413 653 390 654 445" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M456 35 455 100 512 119 520 170 492 201 475 254 462 302 485 334 537 337 542 397 597 413 653 390 654 445" fill="none" stroke="#1675f8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="456" cy="35" r="11" fill="white"/><circle cx="456" cy="35" r="6" fill="#1675f8"/>
+              <circle cx="654" cy="445" r="11" fill="white"/><circle cx="654" cy="445" r="6" fill="#172330"/>
+              <g fill="#798c95" font-size="13" font-family="-apple-system, sans-serif" font-weight="650"><text x="48" y="193">KENSINGTON</text><text x="505" y="93">SOHO</text><text x="680" y="184">CITY OF LONDON</text><text x="245" y="399">SOUTHWARK</text></g>
+            </svg>
+            <div class="map-tools"><span>+</span><span>−</span></div>
+            <div class="credit">Illustrative map · real app uses MapKit</div>
+          </div>
+          <div class="details-row"><div class="metric"><span>Duration</span><b id="detail-length">2h 20m</b></div><div class="metric"><span>Route</span><b id="detail-route">GPS route saved</b></div></div>
+          <button class="primary mobile-export" type="button">Export GPX ↗</button>
+        </div>
+      </section>
+      <div class="phone-bottom"></div>
+    </div>
+    <p class="caption"><strong>Why this layout:</strong> thousands of rows remain lightweight and searchable; one selected route gets the entire map. This is a reviewable visual concept, not an implemented app screen. Sample names and times are illustrative.</p>
+  </main>
+  <script>
+    const device = document.getElementById('device');
+    const macButton = document.getElementById('mac-button');
+    const phoneButton = document.getElementById('phone-button');
+    macButton.addEventListener('click', () => {
+      device.classList.remove('phone', 'show-detail');
+      macButton.classList.add('active');
+      phoneButton.classList.remove('active');
+    });
+    phoneButton.addEventListener('click', () => {
+      device.classList.add('phone');
+      macButton.classList.remove('active');
+      phoneButton.classList.add('active');
+    });
+    if (window.matchMedia('(max-width: 850px)').matches) phoneButton.click();
+    document.getElementById('back-button').addEventListener('click', () => device.classList.remove('show-detail'));
+    for (const walk of document.querySelectorAll('.walk')) {
+      walk.addEventListener('click', () => {
+        document.querySelector('.walk.active')?.classList.remove('active');
+        walk.classList.add('active');
+        document.getElementById('detail-date').textContent = walk.dataset.day;
+        document.getElementById('detail-title').textContent = walk.dataset.title;
+        document.getElementById('detail-time').textContent = walk.dataset.time;
+        document.getElementById('detail-length').textContent = walk.dataset.length;
+        document.getElementById('detail-route').textContent = walk.dataset.route;
+        document.getElementById('bar-day').textContent = walk.dataset.day.replace(/^\S+ /, '');
+        if (device.classList.contains('phone')) device.classList.add('show-detail');
+      });
+    }
+  </script>
+</body>
+</html>

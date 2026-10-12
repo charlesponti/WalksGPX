@@ -34,6 +34,49 @@ final class ICloudGPXPublisher: @unchecked Sendable {
         }
     }
 
+    func writeReconciliationBatch(_ routes: [WalkRoute]) async throws {
+        try await enqueue {
+            try self.writeReconciliationBatchSynchronously(routes)
+        }
+    }
+
+    func finishReconciliation(_ entries: [ICloudExportManifestEntry]) async throws -> ICloudExportReport {
+        try await enqueue {
+            try self.finishReconciliationSynchronously(entries)
+        }
+    }
+
+    func hasCompleteManifest(for routeIDs: Set<UUID>) async throws -> Bool {
+        try await enqueue {
+            let folderURL = try self.exportFolderProvider()
+            guard let manifest = try Self.readManifest(in: folderURL) else { return false }
+            guard Set(manifest.walks.map(\.id)) == routeIDs else { return false }
+            return manifest.walks.allSatisfy { entry in
+                FileManager.default.fileExists(
+                    atPath: folderURL.appendingPathComponent(entry.filename, isDirectory: false).path
+                )
+            }
+        }
+    }
+
+    func removeRoutes(ids: Set<UUID>) async throws {
+        guard !ids.isEmpty else { return }
+        try await enqueue {
+            let folderURL = try self.exportFolderProvider()
+            guard let manifest = try Self.readManifest(in: folderURL) else {
+                throw ICloudGPXPublisherError.manifestUnavailable
+            }
+            for id in ids {
+                let fileURL = folderURL.appendingPathComponent(ICloudExportManifestEntry.filename(for: id))
+                try Self.removeCoordinatedItem(at: fileURL)
+            }
+            let remainingEntries = manifest.walks.filter { !ids.contains($0.id) }
+            if remainingEntries != manifest.walks {
+                try Self.writeManifest(ICloudExportManifest(entries: remainingEntries), in: folderURL)
+            }
+        }
+    }
+
     func reconcile(
         routes: [WalkRoute],
         progress: @escaping @Sendable (ICloudExportProgress) -> Void = { _ in }
@@ -68,13 +111,44 @@ final class ICloudGPXPublisher: @unchecked Sendable {
 
         for start in stride(from: 0, to: uniqueRoutes.count, by: Self.publicationBatchSize) {
             let end = min(start + Self.publicationBatchSize, uniqueRoutes.count)
-            _ = try publishBatchSynchronously(Array(uniqueRoutes[start..<end]))
+            try writeReconciliationBatchSynchronously(Array(uniqueRoutes[start..<end]))
             progress(ICloudExportProgress(completedRoutes: end, totalRoutes: uniqueRoutes.count))
         }
 
+        let desiredManifest = ICloudExportManifest(routes: uniqueRoutes)
+        let report = try finishReconciliationSynchronously(desiredManifest.walks)
+        progress(ICloudExportProgress(completedRoutes: uniqueRoutes.count, totalRoutes: uniqueRoutes.count))
+        return report
+    }
+
+    private func writeReconciliationBatchSynchronously(_ routes: [WalkRoute]) throws {
+        let folderURL = try exportFolderProvider()
+        let manifest = try Self.readManifest(in: folderURL)
+        let existingEntries = Dictionary(
+            manifest?.walks.map { ($0.id, $0) } ?? [],
+            uniquingKeysWith: { _, latest in latest }
+        )
+        for route in routes {
+            let entry = ICloudExportManifestEntry(route: route)
+            let fileURL = folderURL.appendingPathComponent(entry.filename, isDirectory: false)
+            if existingEntries[route.id] != entry || !FileManager.default.fileExists(atPath: fileURL.path) {
+                try Self.writeCoordinated(GPXExporter.data(for: route), to: fileURL)
+            }
+        }
+    }
+
+    private func finishReconciliationSynchronously(
+        _ entries: [ICloudExportManifestEntry]
+    ) throws -> ICloudExportReport {
         let folderURL = try exportFolderProvider()
         let previousManifest = try Self.readManifest(in: folderURL)
-        let desiredManifest = ICloudExportManifest(routes: uniqueRoutes)
+        let desiredManifest = ICloudExportManifest(entries: entries)
+        let missingFile = desiredManifest.walks.first { entry in
+            !FileManager.default.fileExists(
+                atPath: folderURL.appendingPathComponent(entry.filename, isDirectory: false).path
+            )
+        }
+        guard missingFile == nil else { throw ICloudGPXPublisherError.reconciliationFileMissing }
         if previousManifest?.walks != desiredManifest.walks {
             try Self.writeManifest(desiredManifest, in: folderURL)
         }
@@ -84,7 +158,6 @@ final class ICloudGPXPublisher: @unchecked Sendable {
             try Self.removeCoordinatedItem(at: fileURL)
         }
 
-        progress(ICloudExportProgress(completedRoutes: uniqueRoutes.count, totalRoutes: uniqueRoutes.count))
         return try Self.report(for: desiredManifest, in: folderURL)
     }
 
@@ -222,11 +295,17 @@ final class ICloudGPXPublisher: @unchecked Sendable {
 
 private enum ICloudGPXPublisherError: LocalizedError {
     case containerUnavailable
+    case reconciliationFileMissing
+    case manifestUnavailable
 
     var errorDescription: String? {
         switch self {
         case .containerUnavailable:
             "iCloud Drive is unavailable. Check that you’re signed in and iCloud Drive is enabled; saved walks remain on this iPhone and will retry."
+        case .reconciliationFileMissing:
+            "A GPX file is missing, so the iCloud Drive manifest was left unchanged. Retry the update."
+        case .manifestUnavailable:
+            "The iCloud Drive manifest is unavailable, so route deletions were kept queued. Repair the iCloud Drive folder and retry."
         }
     }
 }

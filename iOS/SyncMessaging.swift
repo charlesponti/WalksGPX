@@ -24,8 +24,8 @@ enum SyncMessaging {
             return "No walking workouts are visible. Check Health access for Workouts and Workout Routes, then sync again."
         }
         if pendingRouteCount > 0 {
-            return "Saved \(savedRouteCount) GPS routes. \(pendingRouteCount) workouts still have no readable route; check Health access for Workout Routes."
+            return "Your library has \(savedRouteCount) GPS routes. \(pendingRouteCount) route lookup\(pendingRouteCount == 1 ? " will" : "s will") retry."
         }
-        return "Saved \(savedRouteCount) GPS route\(savedRouteCount == 1 ? "" : "s")."
+        return "Your library has \(savedRouteCount) GPS route\(savedRouteCount == 1 ? "" : "s")."
     }
 }

@@ -20,6 +20,13 @@ iCloud publication is a retryable mirror. HealthKit sync must continue if
 iCloud is unavailable. There is no server, MCP process, Core Data CloudKit
 mirroring, or agent-side write access in this change.
 
+**Scope note:** This plan documents the earlier iCloud Drive GPX-file feature,
+whose scope intentionally excluded Core Data CloudKit mirroring. The app now
+also uses CloudKit to mirror its Core Data route records between iPhone and
+Mac; see [persistence](persistence.md). Keep the two sync paths separate: this
+plan remains the specification for portable GPX files and the agent-readable
+manifest only.
+
 Use the existing container `iCloud.io.ponti.walksgpx`; publish its `Documents`
 directory as the app-visible folder named `Walks GPX`. Store `manifest.json`
 and GPX files directly in that folder. Each GPX filename is

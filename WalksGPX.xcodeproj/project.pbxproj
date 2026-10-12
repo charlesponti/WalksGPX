@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		006FB6DF7EDC64657807ACC6 /* HealthKitAuthorizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D309041E61AE5B1E9C21CAF /* HealthKitAuthorizationTests.swift */; };
+		A10101010101010101010101 /* MacOSLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20202020202020202020202 /* MacOSLibraryTests.swift */; };
+		A11111111111111111111111 /* GPXExporterTests.swift in Mac Sources */ = {isa = PBXBuildFile; fileRef = F46A96C0C747D340D9B57448 /* GPXExporterTests.swift */; };
+		A12121212121212121212121 /* RouteMapGeometryTests.swift in Mac Sources */ = {isa = PBXBuildFile; fileRef = A6EAD346DF0AE0D64914701A /* RouteMapGeometryTests.swift */; };
+		A13131313131313131313131 /* RouteThumbnailTests.swift in Mac Sources */ = {isa = PBXBuildFile; fileRef = 5B917AC54E9385C19D200105 /* RouteThumbnailTests.swift */; };
+		A14141414141414141414141 /* WalkStoreTests.swift in Mac Sources */ = {isa = PBXBuildFile; fileRef = 97ED6206110C5ABB9C046160 /* WalkStoreTests.swift */; };
+		A15151515151515151515151 /* ICloudExportManifestTests.swift in Mac Sources */ = {isa = PBXBuildFile; fileRef = 2498F4BE2BBD58DE57831632 /* ICloudExportManifestTests.swift */; };
 		223CEF53BC7CF8578146C537 /* walking.json in Resources */ = {isa = PBXBuildFile; fileRef = FCA32A3D61FB12007353380A /* walking.json */; };
 		231EF6B479928856BC7B6821 /* ICloudExportManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8DD558EE8B17C665CD9D9A /* ICloudExportManifest.swift */; };
 		28180F4C14C315D5CD9D633B /* HealthKitRouteProcessingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F772C3F35459C7A9E5FBB53 /* HealthKitRouteProcessingTests.swift */; };
@@ -19,6 +25,9 @@
 		577359428F7499323631C38C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694C95154CCDEB86E00D718A /* ContentView.swift */; };
 		57FE262F77886FB4538BD7D6 /* SyncState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4697840ADA7CF0F61CEC919C /* SyncState.swift */; };
 		5A7835DDDF6828AF39658E5B /* RouteMapGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EAD346DF0AE0D64914701A /* RouteMapGeometryTests.swift */; };
+		5B917AC54E9385C19D200101 /* RouteThumbnailRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B917AC54E9385C19D200102 /* RouteThumbnailRenderer.swift */; };
+		5B917AC54E9385C19D200103 /* RouteThumbnailRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B917AC54E9385C19D200102 /* RouteThumbnailRenderer.swift */; };
+		5B917AC54E9385C19D200104 /* RouteThumbnailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B917AC54E9385C19D200105 /* RouteThumbnailTests.swift */; };
 		5FE32A8B80C044582C411D00 /* WalkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E70BA13A526EC14C33EB14C /* WalkStore.swift */; };
 		6525A10B1B85BBABB64FD60F /* GPXExporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46A96C0C747D340D9B57448 /* GPXExporterTests.swift */; };
 		6A957C814ED7288430D5D8BC /* ICloudGPXPublisherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7C67F9A4B31CD29A7A0C3D /* ICloudGPXPublisherTests.swift */; };
@@ -33,8 +42,11 @@
 		C3113ABC032D29ABF0CA627E /* SyncMessagingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CE42686E7990406B3DB444 /* SyncMessagingTests.swift */; };
 		C51E4CC9DC064DBE2518D644 /* SyncMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8BFE6D2B9E7E940F62254B /* SyncMessaging.swift */; };
 		D07FEC16C6B372D775277DDF /* RouteMapGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */; };
+		D171E26C876F40F19E5AB681 /* WalkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72C6A37B19543A58A58EBD4 /* WalkCard.swift */; };
+		D87F12A6E71D485B8B7BCDB2 /* RouteMapGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */; };
 		D9D4B020FC782994966FED7D /* ICloudGPXPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A81134D84C85866E4833BE /* ICloudGPXPublisher.swift */; };
 		EFC3C944CC9E8AE9B21F5744 /* WalkRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3921DDD98B9F5F76F4330791 /* WalkRoute.swift */; };
+		E1681B15A7A8432DB375470A /* WalkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72C6A37B19543A58A58EBD4 /* WalkCard.swift */; };
 		F13E7EE3A82EF00A3D3D6E10 /* SyncStateStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EBC4C3CFA4ECE8BE6511ADD /* SyncStateStoreTests.swift */; };
 		F667C9173DE2D9715922F354 /* ICloudExportConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56354F2B27EFBB47CC677BB3 /* ICloudExportConfiguration.swift */; };
 		FBF332DD6831D4B352F1D809 /* ICloudExportManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD8DD558EE8B17C665CD9D9A /* ICloudExportManifest.swift */; };
@@ -48,6 +60,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 66CAA1E4B7FBE16458EA3F3B;
 			remoteInfo = "WalksGPX iOS";
+		};
+		A80808080808080808080808 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C7681A08CE87951CB96F827 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B26F7B26FC937484C12B24BD;
+			remoteInfo = "WalksGPX macOS";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -63,7 +82,11 @@
 		49A6138F07358A3B906E6FD5 /* ContentViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewTests.swift; sourceTree = "<group>"; };
 		56354F2B27EFBB47CC677BB3 /* ICloudExportConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudExportConfiguration.swift; sourceTree = "<group>"; };
 		5F772C3F35459C7A9E5FBB53 /* HealthKitRouteProcessingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitRouteProcessingTests.swift; sourceTree = "<group>"; };
+		5B917AC54E9385C19D200102 /* RouteThumbnailRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteThumbnailRenderer.swift; sourceTree = "<group>"; };
+		5B917AC54E9385C19D200105 /* RouteThumbnailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteThumbnailTests.swift; sourceTree = "<group>"; };
 		63E85F1B34F513FDFDF13CA4 /* WalksGPXTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WalksGPXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20202020202020202020202 /* MacOSLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSLibraryTests.swift; sourceTree = "<group>"; };
+		A30303030303030303030303 /* WalksGPXMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WalksGPXMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		694C95154CCDEB86E00D718A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6A6D5144FBB2B22B2D6466AE /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		7505B7AA4E6AF35A83F24963 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -78,6 +101,7 @@
 		AAD8F6656A89998C8327A9BA /* WalksGPX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WalksGPX.entitlements; sourceTree = "<group>"; };
 		AE8BFE6D2B9E7E940F62254B /* SyncMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMessaging.swift; sourceTree = "<group>"; };
 		B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteMapGeometry.swift; sourceTree = "<group>"; };
+		E72C6A37B19543A58A58EBD4 /* WalkCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkCard.swift; sourceTree = "<group>"; };
 		B2A266C527CBC9E19DC9D108 /* GPXExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXExporter.swift; sourceTree = "<group>"; };
 		B2DB893E8F07E6E067D59257 /* WalksGPX macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WalksGPX macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC7C67F9A4B31CD29A7A0C3D /* ICloudGPXPublisherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudGPXPublisherTests.swift; sourceTree = "<group>"; };
@@ -107,7 +131,6 @@
 				6A6D5144FBB2B22B2D6466AE /* HealthKitService.swift */,
 				81A81134D84C85866E4833BE /* ICloudGPXPublisher.swift */,
 				22D162B88D7009256A5463B1 /* Info.plist */,
-				B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */,
 				AE8BFE6D2B9E7E940F62254B /* SyncMessaging.swift */,
 				4697840ADA7CF0F61CEC919C /* SyncState.swift */,
 				FCA32A3D61FB12007353380A /* walking.json */,
@@ -122,7 +145,10 @@
 				B2A266C527CBC9E19DC9D108 /* GPXExporter.swift */,
 				56354F2B27EFBB47CC677BB3 /* ICloudExportConfiguration.swift */,
 				CD8DD558EE8B17C665CD9D9A /* ICloudExportManifest.swift */,
+				B22557C7ED7522E2ABB590C1 /* RouteMapGeometry.swift */,
+				5B917AC54E9385C19D200102 /* RouteThumbnailRenderer.swift */,
 				3921DDD98B9F5F76F4330791 /* WalkRoute.swift */,
+				E72C6A37B19543A58A58EBD4 /* WalkCard.swift */,
 				8E70BA13A526EC14C33EB14C /* WalkStore.swift */,
 			);
 			path = Shared;
@@ -134,6 +160,7 @@
 				450DE87B06A40571B63911CA /* WalksGPX iOS.app */,
 				B2DB893E8F07E6E067D59257 /* WalksGPX macOS.app */,
 				63E85F1B34F513FDFDF13CA4 /* WalksGPXTests.xctest */,
+				A30303030303030303030303 /* WalksGPXMacTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -160,9 +187,11 @@
 				2724F81D7C4B3C429811CBE9 /* ICloudExportProgressTests.swift */,
 				CC7C67F9A4B31CD29A7A0C3D /* ICloudGPXPublisherTests.swift */,
 				A6EAD346DF0AE0D64914701A /* RouteMapGeometryTests.swift */,
+				5B917AC54E9385C19D200105 /* RouteThumbnailTests.swift */,
 				13CE42686E7990406B3DB444 /* SyncMessagingTests.swift */,
 				7EBC4C3CFA4ECE8BE6511ADD /* SyncStateStoreTests.swift */,
 				97ED6206110C5ABB9C046160 /* WalkStoreTests.swift */,
+				A20202020202020202020202 /* MacOSLibraryTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -237,6 +266,17 @@
 			productReference = 63E85F1B34F513FDFDF13CA4 /* WalksGPXTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		A40404040404040404040404 /* WalksGPXMacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A50505050505050505050505 /* Build configuration list for WalksGPXMacTests */;
+			buildPhases = (A60606060606060606060606 /* Sources */,);
+			buildRules = ();
+			dependencies = (A70707070707070707070707 /* PBXTargetDependency */,);
+			name = WalksGPXMacTests;
+			productName = WalksGPXMacTests;
+			productReference = A30303030303030303030303 /* WalksGPXMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -277,6 +317,7 @@
 				66CAA1E4B7FBE16458EA3F3B /* WalksGPX iOS */,
 				B26F7B26FC937484C12B24BD /* WalksGPX macOS */,
 				DDD52F65E1A0904C8FF7C219 /* WalksGPXTests */,
+				A40404040404040404040404 /* WalksGPXMacTests */,
 			);
 		};
 /* End PBXProject section */
@@ -312,6 +353,9 @@
 				FBF332DD6831D4B352F1D809 /* ICloudExportManifest.swift in Sources */,
 				EFC3C944CC9E8AE9B21F5744 /* WalkRoute.swift in Sources */,
 				4CE780D81B87E596056A69E0 /* WalkStore.swift in Sources */,
+				D87F12A6E71D485B8B7BCDB2 /* RouteMapGeometry.swift in Sources */,
+				5B917AC54E9385C19D200103 /* RouteThumbnailRenderer.swift in Sources */,
+				E1681B15A7A8432DB375470A /* WalkCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,9 +371,23 @@
 				749376734DD2FBB978E9642F /* ICloudExportProgressTests.swift in Sources */,
 				6A957C814ED7288430D5D8BC /* ICloudGPXPublisherTests.swift in Sources */,
 				5A7835DDDF6828AF39658E5B /* RouteMapGeometryTests.swift in Sources */,
+				5B917AC54E9385C19D200104 /* RouteThumbnailTests.swift in Sources */,
 				C3113ABC032D29ABF0CA627E /* SyncMessagingTests.swift in Sources */,
 				F13E7EE3A82EF00A3D3D6E10 /* SyncStateStoreTests.swift in Sources */,
 				7282FA32BFBA5EC7CB42B768 /* WalkStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A60606060606060606060606 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10101010101010101010101 /* MacOSLibraryTests.swift in Sources */,
+				A11111111111111111111111 /* GPXExporterTests.swift in Mac Sources */,
+				A12121212121212121212121 /* RouteMapGeometryTests.swift in Mac Sources */,
+				A13131313131313131313131 /* RouteThumbnailTests.swift in Mac Sources */,
+				A14141414141414141414141 /* WalkStoreTests.swift in Mac Sources */,
+				A15151515151515151515151 /* ICloudExportManifestTests.swift in Mac Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,10 +402,12 @@
 				231EF6B479928856BC7B6821 /* ICloudExportManifest.swift in Sources */,
 				D9D4B020FC782994966FED7D /* ICloudGPXPublisher.swift in Sources */,
 				D07FEC16C6B372D775277DDF /* RouteMapGeometry.swift in Sources */,
+				5B917AC54E9385C19D200101 /* RouteThumbnailRenderer.swift in Sources */,
 				C51E4CC9DC064DBE2518D644 /* SyncMessaging.swift in Sources */,
 				57FE262F77886FB4538BD7D6 /* SyncState.swift in Sources */,
 				A6718C26BAE3BFFD968FED84 /* WalkRoute.swift in Sources */,
 				5FE32A8B80C044582C411D00 /* WalkStore.swift in Sources */,
+				D171E26C876F40F19E5AB681 /* WalkCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,6 +418,11 @@
 			isa = PBXTargetDependency;
 			target = 66CAA1E4B7FBE16458EA3F3B /* WalksGPX iOS */;
 			targetProxy = 647D4120DB14B73D1D3AC6DE /* PBXContainerItemProxy */;
+		};
+		A70707070707070707070707 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B26F7B26FC937484C12B24BD /* WalksGPX macOS */;
+			targetProxy = A80808080808080808080808 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -458,6 +523,34 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WalksGPX iOS.app/WalksGPX iOS";
 			};
 			name = Debug;
+		};
+		A90909090909090909090909 /* WalksGPXMacTests Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks", "@loader_path/Frameworks",);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.ponti.walksgpx.macos.tests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WalksGPX macOS.app/Contents/MacOS/WalksGPX macOS";
+			};
+			name = Debug;
+		};
+		AA0A0A0A0A0A0A0A0A0A0A0A /* WalksGPXMacTests Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks", "@loader_path/Frameworks",);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.ponti.walksgpx.macos.tests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WalksGPX macOS.app/Contents/MacOS/WalksGPX macOS";
+			};
+			name = Release;
 		};
 		54FB5FA8BEB1EA16E0A599D4 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -592,6 +685,12 @@
 				4BC32A3D61D20D0A037CA135 /* Debug */,
 				84A85C33B0CA51B31BC7D1AA /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A50505050505050505050505 /* Build configuration list for WalksGPXMacTests */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (A90909090909090909090909 /* WalksGPXMacTests Debug */, AA0A0A0A0A0A0A0A0A0A0A0A /* WalksGPXMacTests Release */,);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};

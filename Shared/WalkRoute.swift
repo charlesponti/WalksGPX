@@ -12,7 +12,11 @@ struct WalkRoute: Identifiable, Codable, Hashable, Sendable {
     }
 
     var filename: String {
-        "walk-\(Self.filenameDate.string(from: startDate)).gpx"
+        Self.filename(for: startDate)
+    }
+
+    static func filename(for startDate: Date) -> String {
+        "walk-\(filenameDate.string(from: startDate)).gpx"
     }
 
     private static let filenameDate: DateFormatter = {

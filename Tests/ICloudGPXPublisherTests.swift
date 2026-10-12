@@ -128,6 +128,69 @@ final class ICloudGPXPublisherTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: manifestURL.path))
     }
 
+    func testIncompleteReconciliationLeavesManifestAndExistingExportsUntouched() async throws {
+        let retained = route(start: 10, latitude: 51.5)
+        let notYetWritten = route(start: 20, latitude: 51.6)
+        _ = try await publisher.publishBatch([retained])
+        let before = try manifest()
+        try await publisher.writeReconciliationBatch([notYetWritten])
+        let missingEntry = ICloudExportManifestEntry(route: route(start: 30, latitude: 51.7))
+
+        do {
+            _ = try await publisher.finishReconciliation([
+                ICloudExportManifestEntry(route: notYetWritten), missingEntry
+            ])
+            XCTFail("An incomplete file set must not commit the replacement manifest")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("manifest was left unchanged"))
+        }
+
+        XCTAssertEqual(try manifest(), before)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL(for: retained).path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL(for: notYetWritten).path))
+    }
+
+    func testPublishingAnAlreadyExportedImmutableRouteDoesNotRewriteItsFile() async throws {
+        let route = route(start: 10, latitude: 51.5)
+        _ = try await publisher.publishBatch([route])
+        XCTAssertEqual(try manifest().walks, [ICloudExportManifestEntry(route: route)])
+        let fileURL = fileURL(for: route)
+        let originalFileNumber = try FileManager.default.attributesOfItem(atPath: fileURL.path)[.systemFileNumber] as? NSNumber
+
+        try await publisher.writeReconciliationBatch([route])
+        let reconciliationFileNumber = try FileManager.default.attributesOfItem(atPath: fileURL.path)[.systemFileNumber] as? NSNumber
+        _ = try await publisher.publishBatch([route])
+
+        let currentFileNumber = try FileManager.default.attributesOfItem(atPath: fileURL.path)[.systemFileNumber] as? NSNumber
+        XCTAssertEqual(reconciliationFileNumber, originalFileNumber, "Reconciliation must not replace an unchanged route")
+        XCTAssertEqual(currentFileNumber, originalFileNumber, "Incremental publishing must not replace an unchanged route")
+    }
+
+    func testRemovingRoutesDeletesOnlyTheirFilesAndManifestEntries() async throws {
+        let retained = route(start: 10, latitude: 51.5)
+        let removed = route(start: 20, latitude: 51.6)
+        _ = try await publisher.publishBatch([retained, removed])
+
+        try await publisher.removeRoutes(ids: [removed.id])
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL(for: retained).path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL(for: removed).path))
+        XCTAssertEqual(try manifest().walks.map(\.id), [retained.id])
+    }
+
+    func testManifestCompletenessRequiresMatchingIDsAndPresentFiles() async throws {
+        let route = route(start: 10, latitude: 51.5)
+        _ = try await publisher.publishBatch([route])
+
+        let complete = try await publisher.hasCompleteManifest(for: [route.id])
+        let mismatched = try await publisher.hasCompleteManifest(for: [route.id, UUID()])
+        XCTAssertTrue(complete)
+        XCTAssertFalse(mismatched)
+        try FileManager.default.removeItem(at: fileURL(for: route))
+        let missingFile = try await publisher.hasCompleteManifest(for: [route.id])
+        XCTAssertFalse(missingFile)
+    }
+
     private var manifestURL: URL {
         folderURL.appendingPathComponent(ICloudExportConfiguration.manifestFilename)
     }

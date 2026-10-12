@@ -4,7 +4,7 @@ A tiny SwiftUI companion app for exporting walking routes from HealthKit as GPX.
 
 ## Important platform detail
 
-Apple does not let macOS apps read the HealthKit store. The iOS target is therefore the HealthKit reader and GPX exporter; the macOS target imports those GPX files and saves them wherever you need.
+Apple does not let macOS apps read the HealthKit store. The iOS target reads HealthKit and saves route records to Core Data; both iOS and macOS targets mirror those records through the same CloudKit private database. Each target has its own local Core Data replica. The iPhone also publishes GPX files and a manifest to iCloud Drive for file access and agent workflows.
 
 ## Build
 
@@ -13,17 +13,23 @@ Apple does not let macOS apps read the HealthKit store. The iOS target is theref
 3. Open `WalksGPX.xcodeproj`.
 4. Select your team for the iOS target and enable the HealthKit capability if Xcode asks.
 5. Run the iOS target on an iPhone with walking routes in Health and tap **Connect Health**.
-6. Find automatic GPX files and `manifest.json` in the **Walks GPX** folder in iCloud Drive on the Mac. Manual share-sheet export and Mac import remain available.
+6. Open Walks GPX on the Mac using the same Apple Account and wait for the CloudKit-backed walk list to populate. The GPX files and `manifest.json` also appear in the **Walks GPX** iCloud Drive folder, independently of Core Data sync.
 
 The iOS app requests only read access. It uses an anchored HealthKit workout query so the first sync reads the history and later syncs process only changes. Routes are saved as they arrive; workouts whose route is not ready are kept in a durable retry queue. A scheduled `BGAppRefreshTask` retries incremental sync in the background when iOS grants runtime and cancels cleanly if the system expires the task.
 
 ## Local persistence
 
-Walks are persisted in a local Core Data store on the iPhone. This keeps HealthKit sync reliable even when iCloud is unavailable. A retryable file mirror publishes GPX routes and `manifest.json` to the user's iCloud Drive **Walks GPX** folder; iCloud delivery is asynchronous.
+Walks are persisted in local Core Data stores on each platform. `NSPersistentCloudKitContainer` mirrors records through the shared private CloudKit database; delivery is asynchronous. The iCloud Drive publisher is a separate retryable file mirror for GPX routes and `manifest.json`. Keep the iCloud Drive export available as a fallback until the initial historical Core Data sync has been verified on the Mac.
 
 ## Tests
 
-The `WalksGPXTests` target covers sync-state persistence and progress behavior. Run it with `xcodebuild test -scheme 'WalksGPX iOS'` on an iOS Simulator. HealthKit and CloudKit require device/system integration testing because the simulator cannot provide the user’s real HealthKit store.
+The `WalksGPXTests` target covers sync state, route processing, GPX output,
+Core Data persistence/store configuration, manifest behavior, and UI state.
+Run it with `xcodebuild test -scheme 'WalksGPX iOS'` on an iOS Simulator.
+HealthKit permissions and real CloudKit delivery still require device/system
+integration testing. The current CloudKit/iCloud storage of HealthKit-derived
+data is a private prototype choice and is not App Store-ready; see
+[`docs/healthkit-access.md`](docs/healthkit-access.md).
 
 ## Documentation
 

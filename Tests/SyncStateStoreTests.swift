@@ -73,6 +73,18 @@ final class SyncStateStoreTests: XCTestCase {
         XCTAssertEqual(state.anchor, anchor)
     }
 
+    func testWorkoutMetadataBackfillFlagIsIndependentFromRouteBackfill() {
+        let state = SyncStateStore(defaults: defaults)
+
+        XCTAssertTrue(state.needsWorkoutMetadataBackfill)
+        state.markWorkoutMetadataBackfillComplete()
+        XCTAssertFalse(state.needsWorkoutMetadataBackfill)
+        XCTAssertTrue(state.needsFullHistoryBackfill)
+
+        state.reset()
+        XCTAssertTrue(state.needsWorkoutMetadataBackfill)
+    }
+
     func testResetRemovesSavedSyncState() {
         let state = SyncStateStore(defaults: defaults)
         state.save(anchor: HKQueryAnchor(fromValue: 7), at: Date())
@@ -128,6 +140,57 @@ final class SyncStateStoreTests: XCTestCase {
 
         XCTAssertEqual(state.anchor, anchor)
         XCTAssertEqual(state.lastSyncDate, date)
+    }
+
+    func testICloudExportJournalSurvivesRelaunchAndAcknowledgesWorkIndependently() {
+        let state = SyncStateStore(defaults: defaults)
+        let routeID = UUID()
+        let deletedID = UUID()
+        state.enqueueICloudRouteIDs([routeID])
+        state.enqueueICloudDeletionIDs([deletedID])
+
+        let relaunched = SyncStateStore(defaults: defaults)
+        XCTAssertEqual(relaunched.pendingICloudRouteIDs, [routeID])
+        XCTAssertEqual(relaunched.pendingICloudDeletionIDs, [deletedID])
+
+        relaunched.acknowledgeICloudRouteIDs([routeID])
+        XCTAssertTrue(relaunched.pendingICloudRouteIDs.isEmpty)
+        XCTAssertEqual(relaunched.pendingICloudDeletionIDs, [deletedID])
+    }
+
+    func testDeletingAnIDRemovesAnyQueuedExportForThatID() {
+        let state = SyncStateStore(defaults: defaults)
+        let id = UUID()
+        state.enqueueICloudRouteIDs([id])
+
+        state.enqueueICloudDeletionIDs([id])
+
+        XCTAssertTrue(state.pendingICloudRouteIDs.isEmpty)
+        XCTAssertEqual(state.pendingICloudDeletionIDs, [id])
+    }
+
+    func testICloudAcknowledgementsRemoveOnlyCompletedIDsAndAreIdempotent() {
+        let state = SyncStateStore(defaults: defaults)
+        let routeIDs = [UUID(), UUID(), UUID()]
+        let deletionIDs = [UUID(), UUID(), UUID()]
+        state.enqueueICloudRouteIDs(Set(routeIDs))
+        state.enqueueICloudDeletionIDs(Set(deletionIDs))
+
+        state.acknowledgeICloudRouteIDs([routeIDs[0], UUID()])
+        state.acknowledgeICloudDeletionIDs([deletionIDs[1], UUID()])
+        state.acknowledgeICloudDeletionIDs([deletionIDs[1]])
+
+        XCTAssertEqual(state.pendingICloudRouteIDs, Set(routeIDs.dropFirst()))
+        XCTAssertEqual(state.pendingICloudDeletionIDs, Set([deletionIDs[0], deletionIDs[2]]))
+    }
+
+    func testInitialICloudReconciliationMarkerPersists() {
+        let state = SyncStateStore(defaults: defaults)
+
+        XCTAssertTrue(state.needsInitialICloudReconciliation)
+        state.markInitialICloudReconciliationComplete()
+
+        XCTAssertFalse(SyncStateStore(defaults: defaults).needsInitialICloudReconciliation)
     }
 
     func testProgressHandlesEmptyAndClampsBounds() {
